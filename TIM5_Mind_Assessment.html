@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIM5 — มิติที่ 4: Mind</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0f14;--surface:#141720;--surface2:#1c2030;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#e8eaf2;--muted:#8890a8;--accent:#a78bfa;--gold:#f5c842;--teal:#2dd4bf;--score1:#f87171;--score2:#fbbf24;--score3:#60a5fa;--score4:#34d399;--score5:#a78bfa;--font:'Sarabun',sans-serif;--mono:'IBM Plex Mono',monospace;--r:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.6;min-height:100vh}
+.header{background:linear-gradient(135deg,#0d0f14 0%,#130d1a 50%,#0d0f14 100%);border-bottom:1px solid var(--border2);padding:28px 36px 24px;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(167,139,250,0.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(167,139,250,0.08) 0%,transparent 55%);pointer-events:none}
+.header-badge{display:inline-flex;align-items:center;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3);border-radius:20px;padding:4px 14px;font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.06em;margin-bottom:16px}
+.header-title{font-size:28px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:6px}
+.header-title span{color:var(--accent)}
+.header-sub{font-size:14px;color:var(--muted);font-family:var(--mono)}
+.header-meta{position:absolute;top:28px;right:36px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8}
+.header-meta strong{color:var(--accent)}
+.progress-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 36px;display:flex;align-items:center;gap:20px}
+.progress-steps{display:flex;gap:6px;flex:1}
+.step-dot{height:4px;flex:1;border-radius:2px;background:var(--border2);transition:background 0.4s}
+.step-dot.active{background:var(--accent)}.step-dot.done{background:var(--teal)}
+.progress-label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.progress-label strong{color:var(--text)}
+.content{max-width:860px;margin:0 auto;padding:32px 36px 80px}
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:24px;overflow:hidden;display:none;animation:fadeUp 0.35s ease}
+.section-card.visible{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.section-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px}
+.criterion-num{font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.25);border-radius:6px;padding:3px 8px;white-space:nowrap;margin-top:2px}
+.criterion-title{font-size:18px;font-weight:600;color:#fff;line-height:1.3}
+.criterion-title em{font-style:normal;color:var(--muted);font-size:14px;font-weight:400;margin-left:8px}
+.criterion-desc{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.7}
+.sub-label{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;padding:2px 7px;margin-top:10px;margin-right:6px}
+.q-block{padding:20px 24px;border-bottom:1px solid var(--border)}.q-block:last-child{border-bottom:none}
+.q-label{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:4px}
+.q-label .q-num{font-family:var(--mono);font-size:11px;color:var(--accent);margin-right:8px}
+.q-sublabel{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.likert-table{width:100%;border-collapse:collapse}
+.likert-table th{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding:0 6px 8px;white-space:nowrap}
+.scale-headers th:nth-child(2){color:var(--score1)}.scale-headers th:nth-child(3){color:var(--score2)}.scale-headers th:nth-child(4){color:var(--score3)}.scale-headers th:nth-child(5){color:var(--score4)}.scale-headers th:nth-child(6){color:var(--score5)}
+.likert-row td{padding:7px 6px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.likert-row:last-child td{border-bottom:none}
+.likert-row td:first-child{color:var(--text);padding-right:14px;font-size:13px;line-height:1.5;min-width:200px}
+.likert-row td:not(:first-child){text-align:center;width:60px}
+.sub-en{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:1px}
+.radio-cell input[type="radio"]{display:none}
+.radio-cell label{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;transition:all 0.18s;background:transparent;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.radio-cell label:hover{border-color:var(--accent);color:var(--accent);background:rgba(167,139,250,0.08)}
+.radio-cell input:checked+label{background:var(--score1);border-color:var(--score1);color:#fff;font-weight:600;box-shadow:0 0 12px rgba(248,113,113,0.4)}
+.score-2 input:checked+label{background:var(--score2);border-color:var(--score2);box-shadow:0 0 12px rgba(251,191,36,0.4)}
+.score-3 input:checked+label{background:var(--score3);border-color:var(--score3);box-shadow:0 0 12px rgba(96,165,250,0.4)}
+.score-4 input:checked+label{background:var(--score4);border-color:var(--score4);box-shadow:0 0 12px rgba(52,211,153,0.4)}
+.score-5 input:checked+label{background:var(--score5);border-color:var(--score5);box-shadow:0 0 12px rgba(167,139,250,0.4)}
+.nav-bar{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:600;transition:all 0.2s}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--muted)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(167,139,250,0.3)}.btn-primary:hover{background:#9061f9;transform:translateY(-1px)}
+.btn-success{background:var(--teal);color:#0d1a18;box-shadow:0 4px 14px rgba(45,212,191,0.3)}
+.section-indicator{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
+#results-panel{display:none}#results-panel.visible{display:block;animation:fadeUp 0.4s ease}
+.results-header{text-align:center;padding:40px 24px 32px}
+.results-header h2{font-size:26px;font-weight:700;color:#fff;margin-bottom:8px}
+.results-header p{font-size:14px;color:var(--muted)}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 28px}
+.score-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;text-align:center;position:relative;overflow:hidden}
+.score-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.score-card.c1::before{background:#a78bfa}.score-card.c2::before{background:#60a5fa}.score-card.c3::before{background:#34d399}.score-card.c4::before{background:#f59e0b}.score-card.c5::before{background:#2dd4bf}.score-card.c6::before{background:#f87171}
+.score-card .criterion-tag{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.score-card .score-val{font-size:30px;font-weight:700;color:#fff;line-height:1;margin-bottom:4px}
+.score-card .score-label{font-size:12px;color:var(--muted);margin-top:8px}
+.radar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:24px;text-align:center}
+.radar-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;font-family:var(--mono);margin-bottom:18px}
+.interpretation-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;margin-bottom:14px}
+.interp-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.interp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.interp-title{font-size:14px;font-weight:600;color:#fff}
+.interp-body{font-size:13.5px;color:var(--muted);line-height:1.75}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bar-label{font-size:12px;color:var(--text);min-width:140px;font-family:var(--mono)}
+.bar-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.8s cubic-bezier(0.16,1,0.3,1)}
+.bar-score{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:36px;text-align:right}
+.overall-wrap{background:linear-gradient(135deg,rgba(167,139,250,0.08),rgba(167,139,250,0.04));border:1px solid rgba(167,139,250,0.2);border-radius:var(--r);padding:28px;text-align:center;margin-bottom:24px}
+.overall-score{font-size:72px;font-weight:700;color:var(--accent);line-height:1;font-family:var(--mono)}
+.overall-label{font-size:14px;color:var(--muted);margin-top:6px;font-family:var(--mono)}
+.overall-level{display:inline-block;margin-top:14px;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:600}
+@media(max-width:640px){.header{padding:20px}.content{padding:20px 16px 60px}.header-meta{display:none}.score-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-badge">NIA Thailand · TIM5 Framework · Diamond-Ring Model</div>
+  <h1 class="header-title">มิติที่ 4: <span>Mind</span> — ความเอาใจใส่พนักงาน</h1>
+  <p class="header-sub">Employee Mindset &amp; Culture Dimension Assessment · Non-Assisted Version</p>
+  <div class="header-meta">
+    <div>5 Dimensions · 30 Criteria · 68 Sub-criteria</div>
+    <div>Total Innovation Management <strong>TIM⁵</strong></div>
+    <div style="margin-top:4px">Pantapong Tangteerasunun · NIA Bangkok</div>
+  </div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-steps" id="stepDots"></div>
+  <div class="progress-label">ส่วนที่ <strong id="stepLabel">1</strong> จาก <strong>6</strong></div>
+</div>
+<div class="content">
+
+<!-- SEC 1: INNOVATION CULTURE -->
+<div class="section-card visible" id="sec1">
+  <div class="section-header">
+    <div><div class="criterion-num">Mind · 19</div></div>
+    <div>
+      <div class="criterion-title">องค์กรนวัตกรรมและวัฒนธรรมนวัตกรรม <em>(Innovation Organization &amp; Culture)</em></div>
+      <div class="criterion-desc">วัฒนธรรมองค์กรหมายถึงกระบวนการ การแลกเปลี่ยน การสื่อสาร หรือการส่งถอดความคิดหรือปรัชญาขององค์กรจากรุ่นสู่รุ่น ซึ่งรวมถึงองค์ความรู้ แนวคิด ทักษะ และศิลปะการส่งต่อ</div>
+      <div><span class="sub-label">Characteristic of org structure</span><span class="sub-label">Learning-oriented organization</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q1.</span> กลุ่มผู้บริหาร — ระดับทัศนคติและวัฒนธรรมนวัตกรรมของผู้บริหาร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ทัศนคติผู้บริหาร (Top Management)</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>ตื่นเต้นและหลงใหลในนวัตกรรม<span class="sub-en">Excited / passionate about innovation</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_top_exc" value="1" id="t1a"><label for="t1a">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_top_exc" value="2" id="t2a"><label for="t2a">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_top_exc" value="3" id="t3a"><label for="t3a">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_top_exc" value="4" id="t4a"><label for="t4a">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_top_exc" value="5" id="t5a"><label for="t5a">5</label></td></tr>
+        <tr class="likert-row"><td>เปิดใจมากกว่าความสงสัยในแนวคิดใหม่<span class="sub-en">Open mind than doubtful new unusual ideas</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_top_open" value="1" id="t1b"><label for="t1b">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_top_open" value="2" id="t2b"><label for="t2b">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_top_open" value="3" id="t3b"><label for="t3b">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_top_open" value="4" id="t4b"><label for="t4b">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_top_open" value="5" id="t5b"><label for="t5b">5</label></td></tr>
+        <tr class="likert-row"><td>สามารถสร้างสรรค์และคิดนอกกรอบ<span class="sub-en">Able to create &amp; think out-of-the-box</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_top_cre" value="1" id="t1c"><label for="t1c">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_top_cre" value="2" id="t2c"><label for="t2c">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_top_cre" value="3" id="t3c"><label for="t3c">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_top_cre" value="4" id="t4c"><label for="t4c">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_top_cre" value="5" id="t5c"><label for="t5c">5</label></td></tr>
+        <tr class="likert-row"><td>มีวิสัยทัศน์และเจ้าความคิด<span class="sub-en">Visionary and Imaginative</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_top_vis" value="1" id="t1d"><label for="t1d">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_top_vis" value="2" id="t2d"><label for="t2d">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_top_vis" value="3" id="t3d"><label for="t3d">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_top_vis" value="4" id="t4d"><label for="t4d">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_top_vis" value="5" id="t5d"><label for="t5d">5</label></td></tr>
+        <tr class="likert-row"><td>สามารถขายความคิดภายในองค์กรได้<span class="sub-en">Can "sell" ideas internally</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_top_sell" value="1" id="t1e"><label for="t1e">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_top_sell" value="2" id="t2e"><label for="t2e">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_top_sell" value="3" id="t3e"><label for="t3e">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_top_sell" value="4" id="t4e"><label for="t4e">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_top_sell" value="5" id="t5e"><label for="t5e">5</label></td></tr>
+        <tr class="likert-row"><td>มีความยืดหยุ่นและอิสระในการทำงาน<span class="sub-en">Flexibility and Freedom</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_top_flex" value="1" id="t1f"><label for="t1f">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_top_flex" value="2" id="t2f"><label for="t2f">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_top_flex" value="3" id="t3f"><label for="t3f">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_top_flex" value="4" id="t4f"><label for="t4f">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_top_flex" value="5" id="t5f"><label for="t5f">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q2.</span> กลุ่มพนักงาน — ระดับทัศนคติและวัฒนธรรมนวัตกรรมของพนักงาน</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ทัศนคติพนักงาน (Staff Level)</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>ตื่นเต้นและหลงใหลในนวัตกรรม<span class="sub-en">Excited / passionate about innovation</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_sta_exc" value="1" id="s1a"><label for="s1a">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_sta_exc" value="2" id="s2a"><label for="s2a">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_sta_exc" value="3" id="s3a"><label for="s3a">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_sta_exc" value="4" id="s4a"><label for="s4a">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_sta_exc" value="5" id="s5a"><label for="s5a">5</label></td></tr>
+        <tr class="likert-row"><td>สามารถสร้างสรรค์และคิดนอกกรอบ<span class="sub-en">Able to create &amp; think out-of-the-box</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_sta_cre" value="1" id="s1b"><label for="s1b">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_sta_cre" value="2" id="s2b"><label for="s2b">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_sta_cre" value="3" id="s3b"><label for="s3b">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_sta_cre" value="4" id="s4b"><label for="s4b">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_sta_cre" value="5" id="s5b"><label for="s5b">5</label></td></tr>
+        <tr class="likert-row"><td>มีความร่วมมือและความเป็นทีม<span class="sub-en">Cooperative teamwork</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_sta_team" value="1" id="s1c"><label for="s1c">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_sta_team" value="2" id="s2c"><label for="s2c">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_sta_team" value="3" id="s3c"><label for="s3c">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_sta_team" value="4" id="s4c"><label for="s4c">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_sta_team" value="5" id="s5c"><label for="s5c">5</label></td></tr>
+        <tr class="likert-row"><td>เน้นผลกระทบทางธุรกิจ<span class="sub-en">Focusing on business impact</span></td>
+          <td class="radio-cell"><input type="radio" name="cult_sta_biz" value="1" id="s1d"><label for="s1d">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cult_sta_biz" value="2" id="s2d"><label for="s2d">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cult_sta_biz" value="3" id="s3d"><label for="s3d">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cult_sta_biz" value="4" id="s4d"><label for="s4d">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cult_sta_biz" value="5" id="s5d"><label for="s5d">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 2: ATTITUDE TOWARD INNOVATION -->
+<div class="section-card" id="sec2">
+  <div class="section-header">
+    <div><div class="criterion-num">Mind · 20</div></div>
+    <div>
+      <div class="criterion-title">ทัศนคติต่อการเป็นองค์กรนวัตกรรม <em>(Attitude toward Innovation)</em></div>
+      <div class="criterion-desc">การเปลี่ยนแปลงของเทคโนโลยีใหม่ วัฒนธรรมใหม่ หรือระบบการทำงานแบบใหม่ เป็นความท้าทายต่อพนักงาน ทัศนคติแบ่งเป็น <strong style="color:var(--accent)">ระดับบุคคล</strong> และ <strong style="color:var(--teal)">ระดับองค์กร</strong></div>
+      <div><span class="sub-label">Individual level</span><span class="sub-label">Organization level</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q3.</span> ระดับบุคคลและระดับองค์กร — ทัศนคติและวัฒนธรรมนวัตกรรม</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ระดับทัศนคติ</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>คุณค่าส่วนบุคคลที่สอดคล้องกับนวัตกรรม<span class="sub-en">Personal value aligned with innovation</span></td>
+          <td class="radio-cell"><input type="radio" name="att_pval" value="1" id="a1"><label for="a1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="att_pval" value="2" id="a2"><label for="a2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="att_pval" value="3" id="a3"><label for="a3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="att_pval" value="4" id="a4"><label for="a4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="att_pval" value="5" id="a5"><label for="a5">5</label></td></tr>
+        <tr class="likert-row"><td>ระบบความเชื่อที่นำไปสู่ทัศนคติเชิงบวก<span class="sub-en">Belief systems contributing to positive attitudes</span></td>
+          <td class="radio-cell"><input type="radio" name="att_belief" value="1" id="ab1"><label for="ab1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="att_belief" value="2" id="ab2"><label for="ab2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="att_belief" value="3" id="ab3"><label for="ab3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="att_belief" value="4" id="ab4"><label for="ab4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="att_belief" value="5" id="ab5"><label for="ab5">5</label></td></tr>
+        <tr class="likert-row"><td>ทัศนคติต่อวัฒนธรรมองค์กร<span class="sub-en">Organization culture attitudes</span></td>
+          <td class="radio-cell"><input type="radio" name="att_orgcult" value="1" id="ao1"><label for="ao1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="att_orgcult" value="2" id="ao2"><label for="ao2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="att_orgcult" value="3" id="ao3"><label for="ao3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="att_orgcult" value="4" id="ao4"><label for="ao4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="att_orgcult" value="5" id="ao5"><label for="ao5">5</label></td></tr>
+        <tr class="likert-row"><td>สิ่งแวดล้อมที่ส่งผลต่อการแลกเปลี่ยนข้อมูลและแนวคิด<span class="sub-en">Environment for sharing information &amp; ideas</span></td>
+          <td class="radio-cell"><input type="radio" name="att_env" value="1" id="ae1"><label for="ae1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="att_env" value="2" id="ae2"><label for="ae2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="att_env" value="3" id="ae3"><label for="ae3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="att_env" value="4" id="ae4"><label for="ae4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="att_env" value="5" id="ae5"><label for="ae5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 3: SHARING -->
+<div class="section-card" id="sec3">
+  <div class="section-header">
+    <div><div class="criterion-num">Mind · 21</div></div>
+    <div>
+      <div class="criterion-title">การแลกเปลี่ยนหรือการแบ่งปัน <em>(Sharing)</em></div>
+      <div class="criterion-desc">ปัจจุบันการแลกเปลี่ยนในระดับเศรษฐกิจ (Sharing Economy) เป็นกระแสที่ถูกเร่งจากระบบสังคม เทคโนโลยี การแพร่กระจายของเครือข่ายสังคม และการมองลูกค้าเป็นศูนย์กลาง ประกอบด้วย <strong style="color:var(--accent)">Openness of Change</strong> และ <strong style="color:var(--teal)">Objective of Sharing</strong></div>
+      <div><span class="sub-label">Openness of change</span><span class="sub-label">Objective of sharing</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q4.</span> ระดับการแลกเปลี่ยนและแบ่งปันในองค์กร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้านการแบ่งปัน</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การแบ่งปันความรู้ภายในองค์กร<span class="sub-en">Internal knowledge sharing</span></td>
+          <td class="radio-cell"><input type="radio" name="shr_internal" value="1" id="sh1"><label for="sh1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="shr_internal" value="2" id="sh2"><label for="sh2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="shr_internal" value="3" id="sh3"><label for="sh3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="shr_internal" value="4" id="sh4"><label for="sh4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="shr_internal" value="5" id="sh5"><label for="sh5">5</label></td></tr>
+        <tr class="likert-row"><td>การเปิดรับการเปลี่ยนแปลงและแนวคิดใหม่<span class="sub-en">Openness to change &amp; new ideas</span></td>
+          <td class="radio-cell"><input type="radio" name="shr_open" value="1" id="so1"><label for="so1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="shr_open" value="2" id="so2"><label for="so2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="shr_open" value="3" id="so3"><label for="so3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="shr_open" value="4" id="so4"><label for="so4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="shr_open" value="5" id="so5"><label for="so5">5</label></td></tr>
+        <tr class="likert-row"><td>แพลตฟอร์มและช่องทางการแบ่งปัน<span class="sub-en">Sharing platforms &amp; channels</span></td>
+          <td class="radio-cell"><input type="radio" name="shr_plat" value="1" id="sp1"><label for="sp1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="shr_plat" value="2" id="sp2"><label for="sp2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="shr_plat" value="3" id="sp3"><label for="sp3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="shr_plat" value="4" id="sp4"><label for="sp4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="shr_plat" value="5" id="sp5"><label for="sp5">5</label></td></tr>
+        <tr class="likert-row"><td>การมีส่วนร่วมในเครือข่ายแบ่งปันความรู้ภายนอก<span class="sub-en">External knowledge sharing network participation</span></td>
+          <td class="radio-cell"><input type="radio" name="shr_ext" value="1" id="sex1"><label for="sex1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="shr_ext" value="2" id="sex2"><label for="sex2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="shr_ext" value="3" id="sex3"><label for="sex3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="shr_ext" value="4" id="sex4"><label for="sex4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="shr_ext" value="5" id="sex5"><label for="sex5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 4: INCENTIVE -->
+<div class="section-card" id="sec4">
+  <div class="section-header">
+    <div><div class="criterion-num">Mind · 22</div></div>
+    <div>
+      <div class="criterion-title">แรงจูงใจและรางวัล <em>(Incentive &amp; Award)</em></div>
+      <div class="criterion-desc">ระบบแรงจูงใจที่กระตุ้นพฤติกรรมนวัตกรรม ทั้งรางวัลทางการเงินและไม่ใช่การเงิน ประกอบด้วย <strong style="color:var(--accent)">Incentives Planning</strong> การวางแผนแรงจูงใจ และ <strong style="color:var(--teal)">Participation in Public Incentive</strong> การมีส่วนร่วมในแรงจูงใจสาธารณะ</div>
+      <div><span class="sub-label">Incentives planning</span><span class="sub-label">Participation in public incentive</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q5.</span> ระดับระบบแรงจูงใจและรางวัลด้านนวัตกรรม</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้านแรงจูงใจ</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>โปรแกรมแรงจูงใจด้านนวัตกรรมอย่างเป็นทางการ<span class="sub-en">Formal innovation incentive programs</span></td>
+          <td class="radio-cell"><input type="radio" name="inc_formal" value="1" id="if1"><label for="if1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="inc_formal" value="2" id="if2"><label for="if2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="inc_formal" value="3" id="if3"><label for="if3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="inc_formal" value="4" id="if4"><label for="if4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="inc_formal" value="5" id="if5"><label for="if5">5</label></td></tr>
+        <tr class="likert-row"><td>การยกย่องและรางวัลนวัตกรรมทีม<span class="sub-en">Team innovation recognition &amp; award</span></td>
+          <td class="radio-cell"><input type="radio" name="inc_award" value="1" id="ia1"><label for="ia1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="inc_award" value="2" id="ia2"><label for="ia2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="inc_award" value="3" id="ia3"><label for="ia3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="inc_award" value="4" id="ia4"><label for="ia4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="inc_award" value="5" id="ia5"><label for="ia5">5</label></td></tr>
+        <tr class="likert-row"><td>การมีส่วนร่วมในโครงการแรงจูงใจสาธารณะ<span class="sub-en">Participation in public/government incentive</span></td>
+          <td class="radio-cell"><input type="radio" name="inc_pub" value="1" id="ip1"><label for="ip1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="inc_pub" value="2" id="ip2"><label for="ip2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="inc_pub" value="3" id="ip3"><label for="ip3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="inc_pub" value="4" id="ip4"><label for="ip4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="inc_pub" value="5" id="ip5"><label for="ip5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 5: SUSTAINABILITY -->
+<div class="section-card" id="sec5">
+  <div class="section-header">
+    <div><div class="criterion-num">Mind · 23</div></div>
+    <div>
+      <div class="criterion-title">ความยั่งยืน <em>(Sustainability)</em></div>
+      <div class="criterion-desc">ความยั่งยืนเป็นปัจจัยสำคัญของความเกี่ยวเนื่องของธุรกิจกับภาคธุรกิจหรืออุตสาหกรรมอื่น องค์กรต้องสร้างภูมิคุ้มกันโดยการพึ่งพาตัวเองและสร้างความสัมพันธ์ระหว่างชุมชน — บูรณาการ <strong style="color:var(--accent)">ปรัชญาเศรษฐกิจพอเพียง</strong> (Sufficiency Economy) ของไทย</div>
+      <div><span class="sub-label">Scope of sustainability</span><span class="sub-label">Self-sufficiency &amp; reciprocity</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q6.</span> ระดับความยั่งยืนขององค์กร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้านความยั่งยืน</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>กลยุทธ์ความยั่งยืนขององค์กร<span class="sub-en">Formal sustainability strategy</span></td>
+          <td class="radio-cell"><input type="radio" name="sus_strat" value="1" id="ss1"><label for="ss1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sus_strat" value="2" id="ss2"><label for="ss2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sus_strat" value="3" id="ss3"><label for="ss3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sus_strat" value="4" id="ss4"><label for="ss4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sus_strat" value="5" id="ss5"><label for="ss5">5</label></td></tr>
+        <tr class="likert-row"><td>การเชื่อมโยงความยั่งยืนกับเป้าหมายนวัตกรรม<span class="sub-en">Sustainability linked to innovation goals</span></td>
+          <td class="radio-cell"><input type="radio" name="sus_link" value="1" id="sl1"><label for="sl1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sus_link" value="2" id="sl2"><label for="sl2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sus_link" value="3" id="sl3"><label for="sl3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sus_link" value="4" id="sl4"><label for="sl4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sus_link" value="5" id="sl5"><label for="sl5">5</label></td></tr>
+        <tr class="likert-row"><td>CSR และความรับผิดชอบต่อสังคม<span class="sub-en">CSR &amp; social responsibility integration</span></td>
+          <td class="radio-cell"><input type="radio" name="sus_csr" value="1" id="sc1"><label for="sc1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sus_csr" value="2" id="sc2"><label for="sc2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sus_csr" value="3" id="sc3"><label for="sc3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sus_csr" value="4" id="sc4"><label for="sc4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sus_csr" value="5" id="sc5"><label for="sc5">5</label></td></tr>
+        <tr class="likert-row"><td>ปรัชญาเศรษฐกิจพอเพียง — ความพอประมาณและภูมิคุ้มกัน<span class="sub-en">Sufficiency Economy Philosophy integration</span></td>
+          <td class="radio-cell"><input type="radio" name="sus_suf" value="1" id="ssuf1"><label for="ssuf1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sus_suf" value="2" id="ssuf2"><label for="ssuf2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sus_suf" value="3" id="ssuf3"><label for="ssuf3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sus_suf" value="4" id="ssuf4"><label for="ssuf4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sus_suf" value="5" id="ssuf5"><label for="ssuf5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 6: ENVIRONMENT, SOCIAL, HUMAN VALUES -->
+<div class="section-card" id="sec6">
+  <div class="section-header">
+    <div><div class="criterion-num">Mind · 24</div></div>
+    <div>
+      <div class="criterion-title">สิ่งแวดล้อม สังคม และคุณค่าของมนุษย์ <em>(Environment, Social &amp; Human Values)</em></div>
+      <div class="criterion-desc">ความยั่งยืนสมบูรณ์เป็นกลไกขับเคลื่อนหลักในการสร้างนวัตกรรม โดยสามารถสร้างแนวคิดใหม่ กระบวนการใหม่ การออกแบบภายใต้ข้อจำกัดของทรัพยากรที่มีจำกัด ซึ่งถูกใช้ในความหมายของปัจจัยการผลิตเพื่อการสร้างสรรค์ iGood</div>
+      <div><span class="sub-label">Environmental values</span><span class="sub-label">Social impact</span><span class="sub-label">Human values</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q7.</span> ระดับคุณค่าด้านสิ่งแวดล้อม สังคม และมนุษย์ในองค์กร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้านคุณค่า ESG</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>คุณค่าด้านสิ่งแวดล้อมในวัฒนธรรมองค์กร<span class="sub-en">Environmental values embedded in culture</span></td>
+          <td class="radio-cell"><input type="radio" name="esg_env" value="1" id="ee1"><label for="ee1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="esg_env" value="2" id="ee2"><label for="ee2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="esg_env" value="3" id="ee3"><label for="ee3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="esg_env" value="4" id="ee4"><label for="ee4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="esg_env" value="5" id="ee5"><label for="ee5">5</label></td></tr>
+        <tr class="likert-row"><td>ผลกระทบทางสังคมของนวัตกรรม<span class="sub-en">Social impact of innovations</span></td>
+          <td class="radio-cell"><input type="radio" name="esg_soc" value="1" id="es1"><label for="es1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="esg_soc" value="2" id="es2"><label for="es2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="esg_soc" value="3" id="es3"><label for="es3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="esg_soc" value="4" id="es4"><label for="es4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="esg_soc" value="5" id="es5"><label for="es5">5</label></td></tr>
+        <tr class="likert-row"><td>คุณค่ามนุษย์: ศักดิ์ศรี ความเป็นอยู่ที่ดี ความยุติธรรม<span class="sub-en">Human values: dignity, wellbeing, fairness</span></td>
+          <td class="radio-cell"><input type="radio" name="esg_hum" value="1" id="eh1"><label for="eh1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="esg_hum" value="2" id="eh2"><label for="eh2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="esg_hum" value="3" id="eh3"><label for="eh3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="esg_hum" value="4" id="eh4"><label for="eh4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="esg_hum" value="5" id="eh5"><label for="eh5">5</label></td></tr>
+        <tr class="likert-row"><td>การประเมินผลกระทบสิ่งแวดล้อมก่อนเปิดตัวนวัตกรรม<span class="sub-en">Environmental impact assessment before launch</span></td>
+          <td class="radio-cell"><input type="radio" name="esg_assess" value="1" id="ea1"><label for="ea1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="esg_assess" value="2" id="ea2"><label for="ea2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="esg_assess" value="3" id="ea3"><label for="ea3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="esg_assess" value="4" id="ea4"><label for="ea4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="esg_assess" value="5" id="ea5"><label for="ea5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results-panel">
+  <div class="results-header">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.1em;margin-bottom:10px">MIND DIMENSION ASSESSMENT COMPLETE</div>
+    <h2>ผลการประเมินมิติ Mind</h2>
+    <p>Employee Mindset &amp; Culture Dimension · TIM5 Diamond-Ring Model</p>
+  </div>
+  <div class="overall-wrap">
+    <div class="overall-score" id="overallPct">—</div>
+    <div class="overall-label">คะแนนรวม Mind Dimension (%)</div>
+    <div class="overall-level" id="overallLevel"></div>
+  </div>
+  <div class="score-grid" id="scoreGrid"></div>
+  <div class="radar-wrap">
+    <div class="radar-title">Mind Dimension — Sub-Criteria Score Profile</div>
+    <canvas id="radarChart" width="480" height="320" style="max-width:100%"></canvas>
+  </div>
+  <div id="interpCards"></div>
+</div>
+<div class="nav-bar" id="navBar">
+  <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)" style="display:none">← ก่อนหน้า</button>
+  <div class="section-indicator" id="sectionHint"></div>
+  <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">ถัดไป →</button>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const SECTIONS=6,sectionNames=['องค์กรนวัตกรรม (Culture)','ทัศนคติ (Attitude)','การแบ่งปัน (Sharing)','แรงจูงใจ (Incentive)','ความยั่งยืน (Sustainability)','สิ่งแวดล้อม&สังคม (ESG)'];
+let current=1;
+const dotsWrap=document.getElementById('stepDots');
+for(let i=1;i<=SECTIONS;i++){const d=document.createElement('div');d.className='step-dot'+(i===1?' active':'');d.id='dot'+i;dotsWrap.appendChild(d)}
+function updateUI(){for(let i=1;i<=SECTIONS;i++){document.getElementById('sec'+i).classList.toggle('visible',i===current);const d=document.getElementById('dot'+i);d.className='step-dot'+(i<current?' done':i===current?' active':'')}document.getElementById('stepLabel').textContent=current;document.getElementById('sectionHint').textContent=sectionNames[current-1];document.getElementById('prevBtn').style.display=current>1?'inline-flex':'none';const nb=document.getElementById('nextBtn');if(current===SECTIONS){nb.textContent='ดูผลการประเมิน ✓';nb.className='btn btn-success'}else{nb.textContent='ถัดไป →';nb.className='btn btn-primary'}}
+function navigate(dir){if(current+dir>SECTIONS){showResults();return}current=Math.max(1,Math.min(SECTIONS,current+dir));updateUI();window.scrollTo({top:0,behavior:'smooth'})}
+function getAvg(names){let t=0,c=0;names.forEach(n=>{const v=document.querySelector(`input[name="${n}"]:checked`);if(v){t+=parseInt(v.value);c++}});return c>0?t/c:0}
+function showResults(){
+  for(let i=1;i<=SECTIONS;i++)document.getElementById('sec'+i).classList.remove('visible');
+  document.getElementById('navBar').style.display='none';
+  document.getElementById('results-panel').classList.add('visible');
+  const scores={
+    culture:getAvg(['cult_top_exc','cult_top_open','cult_top_cre','cult_top_vis','cult_top_sell','cult_top_flex','cult_sta_exc','cult_sta_cre','cult_sta_team','cult_sta_biz']),
+    attitude:getAvg(['att_pval','att_belief','att_orgcult','att_env']),
+    sharing:getAvg(['shr_internal','shr_open','shr_plat','shr_ext']),
+    incentive:getAvg(['inc_formal','inc_award','inc_pub']),
+    sustainability:getAvg(['sus_strat','sus_link','sus_csr','sus_suf']),
+    esg:getAvg(['esg_env','esg_soc','esg_hum','esg_assess'])
+  };
+  const pcts={};Object.keys(scores).forEach(k=>{pcts[k]=Math.round((scores[k]/5)*100)});
+  const overall=Math.round(Object.values(pcts).reduce((a,b)=>a+b,0)/6);
+  document.getElementById('overallPct').textContent=overall+'%';
+  let level='',lc='';
+  if(overall>=85){level='★ วัฒนธรรมนวัตกรรมระดับเลิศ';lc='background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3)'}
+  else if(overall>=70){level='✦ ขั้นสูง — วัฒนธรรมนวัตกรรมแข็งแกร่ง';lc='background:rgba(52,211,153,0.12);color:#34d399;border:1px solid rgba(52,211,153,0.3)'}
+  else if(overall>=50){level='◈ กำลังพัฒนา';lc='background:rgba(96,165,250,0.12);color:#60a5fa;border:1px solid rgba(96,165,250,0.3)'}
+  else if(overall>=30){level='◇ ระยะเริ่มต้น';lc='background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)'}
+  else{level='○ ต้องพัฒนา';lc='background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.3)'}
+  const lvlEl=document.getElementById('overallLevel');lvlEl.textContent=level;lvlEl.style.cssText=lc;
+  const cards=[
+    {key:'culture',label:'วัฒนธรรมนวัตกรรม',en:'Innovation Culture',cls:'c1',color:'#a78bfa'},
+    {key:'attitude',label:'ทัศนคติ',en:'Attitude to Innovation',cls:'c2',color:'#60a5fa'},
+    {key:'sharing',label:'การแบ่งปัน',en:'Sharing',cls:'c3',color:'#34d399'},
+    {key:'incentive',label:'แรงจูงใจ',en:'Incentive & Award',cls:'c4',color:'#f59e0b'},
+    {key:'sustainability',label:'ความยั่งยืน',en:'Sustainability',cls:'c5',color:'#2dd4bf'},
+    {key:'esg',label:'สิ่งแวดล้อม/สังคม',en:'ESG Values',cls:'c6',color:'#f87171'}
+  ];
+  const grid=document.getElementById('scoreGrid');grid.innerHTML='';
+  cards.forEach(c=>{grid.innerHTML+=`<div class="score-card ${c.cls}"><div class="criterion-tag">${c.en}</div><div class="score-val">${pcts[c.key]}%</div><div class="score-label">${c.label}</div></div>`});
+  const ie=document.getElementById('interpCards');
+  ie.innerHTML='<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#a78bfa"></div><div class="interp-title">คะแนนย่อยแต่ละเกณฑ์ Mind Dimension</div></div>'+cards.map(c=>`<div class="bar-row"><div class="bar-label">${c.label}</div><div class="bar-track"><div class="bar-fill" style="width:${pcts[c.key]}%;background:${c.color}"></div></div><div class="bar-score">${pcts[c.key]}%</div></div>`).join('')+'</div>';
+  if(pcts.culture<50)ie.innerHTML+=`<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#a78bfa"></div><div class="interp-title">ปรับปรุงด่วน: วัฒนธรรมนวัตกรรม</div></div><div class="interp-body">ควรสร้างและพัฒนาวัฒนธรรมองค์กรที่เอื้อต่อนวัตกรรม โดยเริ่มจากผู้บริหารระดับสูง ส่งเสริมการแสดงออกทางความคิดสร้างสรรค์อย่างปลอดภัย และสร้างพื้นที่ทดลองแนวคิดใหม่</div></div>`;
+  if(pcts.incentive<50)ie.innerHTML+=`<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#f59e0b"></div><div class="interp-title">พัฒนา: ระบบแรงจูงใจ</div></div><div class="interp-body">ควรออกแบบระบบรางวัลและการยกย่องที่เชื่อมโยงกับผลลัพธ์นวัตกรรม ทั้งรางวัลทางการเงิน (โบนัสนวัตกรรม) และไม่ใช่การเงิน (การยกย่องต่อสาธารณะ การพัฒนาอาชีพ)</div></div>`;
+  if(pcts.sustainability<50)ie.innerHTML+=`<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#2dd4bf"></div><div class="interp-title">เร่งพัฒนา: ความยั่งยืน</div></div><div class="interp-body">ควรบูรณาการปรัชญาเศรษฐกิจพอเพียงและแนวคิด ESG เข้ากับกลยุทธ์นวัตกรรม เพื่อสร้างความยั่งยืนในระยะยาวและตอบสนองความคาดหวังของสังคม</div></div>`;
+  const ctx=document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx,{type:'radar',data:{labels:['Innovation Culture','Attitude','Sharing','Incentive','Sustainability','ESG Values'],datasets:[{label:'Mind Score (%)',data:cards.map(c=>pcts[c.key]),borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.12)',borderWidth:2,pointBackgroundColor:cards.map(c=>c.color),pointRadius:5,pointHoverRadius:7}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:100,ticks:{color:'#8890a8',font:{size:10},stepSize:20,backdropColor:'transparent'},grid:{color:'rgba(255,255,255,0.08)'},angleLines:{color:'rgba(255,255,255,0.08)'},pointLabels:{color:'#e8eaf2',font:{size:12,family:"'IBM Plex Mono',monospace"}}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.r}%`},backgroundColor:'#1c2030',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,titleColor:'#e8eaf2',bodyColor:'#8890a8'}}}});
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+updateUI();
+</script>
+</body>
+</html>

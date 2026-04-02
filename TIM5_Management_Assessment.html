@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIM5 — มิติที่ 2: Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0f14;--surface:#141720;--surface2:#1c2030;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#e8eaf2;--muted:#8890a8;--accent:#f59e0b;--gold:#f5c842;--teal:#2dd4bf;--red:#f87171;--green:#4ade80;--amber:#fbbf24;--score1:#f87171;--score2:#fbbf24;--score3:#60a5fa;--score4:#34d399;--score5:#a78bfa;--font:'Sarabun',sans-serif;--mono:'IBM Plex Mono',monospace;--r:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.6;min-height:100vh}
+.header{background:linear-gradient(135deg,#0d0f14 0%,#1a140a 50%,#0d0f14 100%);border-bottom:1px solid var(--border2);padding:28px 36px 24px;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(245,158,11,0.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(245,158,11,0.08) 0%,transparent 55%);pointer-events:none}
+.header-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:20px;padding:4px 14px;font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.06em;margin-bottom:16px}
+.header-title{font-size:28px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:6px}
+.header-title span{color:var(--accent)}
+.header-sub{font-size:14px;color:var(--muted);font-family:var(--mono)}
+.header-meta{position:absolute;top:28px;right:36px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8}
+.header-meta strong{color:var(--accent)}
+.progress-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 36px;display:flex;align-items:center;gap:20px}
+.progress-steps{display:flex;gap:6px;flex:1}
+.step-dot{height:4px;flex:1;border-radius:2px;background:var(--border2);transition:background 0.4s}
+.step-dot.active{background:var(--accent)}
+.step-dot.done{background:var(--teal)}
+.progress-label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.progress-label strong{color:var(--text)}
+.content{max-width:860px;margin:0 auto;padding:32px 36px 80px}
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:24px;overflow:hidden;display:none;animation:fadeUp 0.35s ease}
+.section-card.visible{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.section-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px}
+.criterion-num{font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:6px;padding:3px 8px;white-space:nowrap;margin-top:2px}
+.criterion-title{font-size:18px;font-weight:600;color:#fff;line-height:1.3}
+.criterion-title em{font-style:normal;color:var(--muted);font-size:14px;font-weight:400;margin-left:8px}
+.criterion-desc{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.7}
+.sub-label{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;padding:2px 7px;margin-top:10px;margin-right:6px}
+.q-block{padding:20px 24px;border-bottom:1px solid var(--border)}
+.q-block:last-child{border-bottom:none}
+.q-label{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:4px}
+.q-label .q-num{font-family:var(--mono);font-size:11px;color:var(--accent);margin-right:8px}
+.q-sublabel{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.likert-table{width:100%;border-collapse:collapse}
+.likert-table th{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding:0 6px 8px;white-space:nowrap}
+.scale-headers th:nth-child(2){color:var(--score1)}
+.scale-headers th:nth-child(3){color:var(--score2)}
+.scale-headers th:nth-child(4){color:var(--score3)}
+.scale-headers th:nth-child(5){color:var(--score4)}
+.scale-headers th:nth-child(6){color:var(--score5)}
+.likert-row td{padding:7px 6px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.likert-row:last-child td{border-bottom:none}
+.likert-row td:first-child{color:var(--text);padding-right:14px;font-size:13px;line-height:1.5;min-width:200px}
+.likert-row td:not(:first-child){text-align:center;width:60px}
+.sub-en{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:1px}
+.radio-cell input[type="radio"]{display:none}
+.radio-cell label{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;transition:all 0.18s;background:transparent;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.radio-cell label:hover{border-color:var(--accent);color:var(--accent);background:rgba(245,158,11,0.08)}
+.radio-cell input[type="radio"]:checked+label{background:var(--score1);border-color:var(--score1);color:#fff;font-weight:600;box-shadow:0 0 12px rgba(248,113,113,0.4)}
+.score-2 input:checked+label{background:var(--score2);border-color:var(--score2);box-shadow:0 0 12px rgba(251,191,36,0.4)}
+.score-3 input:checked+label{background:var(--score3);border-color:var(--score3);box-shadow:0 0 12px rgba(96,165,250,0.4)}
+.score-4 input:checked+label{background:var(--score4);border-color:var(--score4);box-shadow:0 0 12px rgba(52,211,153,0.4)}
+.score-5 input:checked+label{background:var(--score5);border-color:var(--score5);box-shadow:0 0 12px rgba(167,139,250,0.4)}
+.checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.checkbox-item{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.checkbox-item input[type="checkbox"]{display:none}
+.check-box{width:18px;height:18px;min-width:18px;border:1.5px solid var(--border2);border-radius:4px;margin-top:2px;transition:all 0.18s;display:flex;align-items:center;justify-content:center;font-size:11px}
+.checkbox-item input:checked~.check-box{background:var(--accent);border-color:var(--accent);color:#fff}
+.checkbox-item input:checked~.check-box::after{content:'✓'}
+.check-text{font-size:13px;color:var(--text);line-height:1.5}
+.check-text em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.q-textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;padding:10px 14px;resize:vertical;min-height:80px;margin-top:8px;transition:border 0.2s;outline:none}
+.q-textarea:focus{border-color:var(--accent)}
+.q-textarea::placeholder{color:var(--muted)}
+.nav-bar{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:600;transition:all 0.2s}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(245,158,11,0.3)}
+.btn-primary:hover{background:#d97706;transform:translateY(-1px)}
+.btn-success{background:var(--teal);color:#0d1a18;box-shadow:0 4px 14px rgba(45,212,191,0.3)}
+.section-indicator{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
+#results-panel{display:none}
+#results-panel.visible{display:block;animation:fadeUp 0.4s ease}
+.results-header{text-align:center;padding:40px 24px 32px}
+.results-header h2{font-size:26px;font-weight:700;color:#fff;margin-bottom:8px}
+.results-header p{font-size:14px;color:var(--muted)}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 28px}
+.score-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;text-align:center;position:relative;overflow:hidden}
+.score-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.score-card.c1::before{background:#f59e0b}
+.score-card.c2::before{background:#60a5fa}
+.score-card.c3::before{background:#a78bfa}
+.score-card.c4::before{background:#34d399}
+.score-card.c5::before{background:#f87171}
+.score-card.c6::before{background:#2dd4bf}
+.score-card .criterion-tag{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.score-card .score-val{font-size:30px;font-weight:700;color:#fff;line-height:1;margin-bottom:4px}
+.score-card .score-label{font-size:12px;color:var(--muted);margin-top:8px}
+.radar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:24px;text-align:center}
+.radar-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;font-family:var(--mono);margin-bottom:18px}
+.interpretation-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;margin-bottom:14px}
+.interp-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.interp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.interp-title{font-size:14px;font-weight:600;color:#fff}
+.interp-body{font-size:13.5px;color:var(--muted);line-height:1.75}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bar-label{font-size:12px;color:var(--text);min-width:140px;font-family:var(--mono)}
+.bar-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.8s cubic-bezier(0.16,1,0.3,1)}
+.bar-score{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:36px;text-align:right}
+.overall-wrap{background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(245,158,11,0.04));border:1px solid rgba(245,158,11,0.2);border-radius:var(--r);padding:28px;text-align:center;margin-bottom:24px}
+.overall-score{font-size:72px;font-weight:700;color:var(--accent);line-height:1;font-family:var(--mono)}
+.overall-label{font-size:14px;color:var(--muted);margin-top:6px;font-family:var(--mono)}
+.overall-level{display:inline-block;margin-top:14px;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:600}
+@media(max-width:640px){.header{padding:20px}.content{padding:20px 16px 60px}.header-meta{display:none}.score-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">NIA Thailand · TIM5 Framework · Diamond-Ring Model</div>
+  <h1 class="header-title">มิติที่ 2: <span>Management</span> — การจัดการองค์กร</h1>
+  <p class="header-sub">Organizational Management Dimension Assessment · Non-Assisted Version</p>
+  <div class="header-meta">
+    <div>5 Dimensions · 30 Criteria · 68 Sub-criteria</div>
+    <div>Total Innovation Management <strong>TIM⁵</strong></div>
+    <div style="margin-top:4px">Pantapong Tangteerasunun · NIA Bangkok</div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-steps" id="stepDots"></div>
+  <div class="progress-label">ส่วนที่ <strong id="stepLabel">1</strong> จาก <strong>6</strong></div>
+</div>
+
+<div class="content">
+
+<!-- SEC 1: STRATEGIES -->
+<div class="section-card visible" id="sec1">
+  <div class="section-header">
+    <div><div class="criterion-num">Mgmt · 07</div></div>
+    <div>
+      <div class="criterion-title">กลยุทธ์ <em>(Strategies)</em></div>
+      <div class="criterion-desc">การจัดการด้านกลยุทธ์เป็นงานด้านการวางกลยุทธ์ขององค์กรที่ถูกขับเคลื่อนจากผู้บริหารระดับสูงสู่ระดับปฏิบัติการ ประกอบด้วย 3 ส่วน: <strong style="color:var(--accent)">Strategy Formulation</strong> การกำหนดกลยุทธ์, <strong style="color:var(--teal)">Dissemination</strong> การเผยแพร่, <strong style="color:var(--gold)">Evaluation</strong> การประเมินผล</div>
+      <div><span class="sub-label">Strategy formulation</span><span class="sub-label">Dissemination</span><span class="sub-label">Strategy evaluation</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q1.</span> บริษัทของท่านมีการกำหนดกลยุทธ์ด้านนวัตกรรมหรือไม่ — ถ้ามี กลยุทธ์ดังกล่าวมีลักษณะอย่างไร</div>
+    <div class="q-sublabel">เลือกทุกข้อที่ตรงกับองค์กรของท่าน (Check all that apply)</div>
+    <div class="checkbox-group">
+      <label class="checkbox-item"><input type="checkbox" name="strat_ana"><div class="check-box"></div><span class="check-text">มาจากการวิเคราะห์โอกาสทางธุรกิจสำหรับอนาคต <em>(From analysis of potential business areas for future innovation)</em></span></label>
+      <label class="checkbox-item"><input type="checkbox" name="strat_obj"><div class="check-box"></div><span class="check-text">กำหนดวัตถุประสงค์ที่ชัดเจนสำหรับกิจกรรมนวัตกรรมแต่ละโครงการ <em>(Sets clear objectives for each innovation project)</em></span></label>
+      <label class="checkbox-item"><input type="checkbox" name="strat_igood"><div class="check-box"></div><span class="check-text">ให้แนวทางการพัฒนานวัตกรรม iGood และความคิดสร้างสรรค์ <em>(Guides innovation & creativity generation)</em></span></label>
+      <label class="checkbox-item"><input type="checkbox" name="strat_change"><div class="check-box"></div><span class="check-text">รองรับการเปลี่ยนแปลงองค์กรและการพัฒนา Business Model ใหม่ <em>(Provides basis for organizational changes & new business model)</em></span></label>
+      <label class="checkbox-item"><input type="checkbox" name="strat_cap"><div class="check-box"></div><span class="check-text">มุ่งเน้นการพัฒนาขีดความสามารถนวัตกรรมขององค์กร <em>(Focuses on the development of innovation capabilities)</em></span></label>
+      <label class="checkbox-item"><input type="checkbox" name="strat_none"><div class="check-box"></div><span class="check-text">ไม่มีการกำหนดกลยุทธ์ด้านนวัตกรรม <em>(No innovation strategy formulation exists)</em></span></label>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q2.</span> กลยุทธ์ถูกสื่อสารและนำไปปฏิบัติในแต่ละระดับองค์กรอย่างไร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ระดับการสื่อสารกลยุทธ์</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>ผู้บริหารระดับสูง<span class="sub-en">Top management</span></td>
+          <td class="radio-cell"><input type="radio" name="strat_top" value="1" id="st1"><label for="st1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="strat_top" value="2" id="st2"><label for="st2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="strat_top" value="3" id="st3"><label for="st3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="strat_top" value="4" id="st4"><label for="st4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="strat_top" value="5" id="st5"><label for="st5">5</label></td></tr>
+        <tr class="likert-row"><td>ผู้บริหารระดับกลาง<span class="sub-en">Middle management</span></td>
+          <td class="radio-cell"><input type="radio" name="strat_mid" value="1" id="sm1"><label for="sm1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="strat_mid" value="2" id="sm2"><label for="sm2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="strat_mid" value="3" id="sm3"><label for="sm3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="strat_mid" value="4" id="sm4"><label for="sm4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="strat_mid" value="5" id="sm5"><label for="sm5">5</label></td></tr>
+        <tr class="likert-row"><td>พนักงาน<span class="sub-en">Employee</span></td>
+          <td class="radio-cell"><input type="radio" name="strat_emp" value="1" id="se1"><label for="se1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="strat_emp" value="2" id="se2"><label for="se2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="strat_emp" value="3" id="se3"><label for="se3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="strat_emp" value="4" id="se4"><label for="se4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="strat_emp" value="5" id="se5"><label for="se5">5</label></td></tr>
+        <tr class="likert-row"><td>การประเมินผลกลยุทธ์<span class="sub-en">Strategy evaluation</span></td>
+          <td class="radio-cell"><input type="radio" name="strat_eval" value="1" id="sev1"><label for="sev1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="strat_eval" value="2" id="sev2"><label for="sev2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="strat_eval" value="3" id="sev3"><label for="sev3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="strat_eval" value="4" id="sev4"><label for="sev4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="strat_eval" value="5" id="sev5"><label for="sev5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 2: HUMAN RESOURCES -->
+<div class="section-card" id="sec2">
+  <div class="section-header">
+    <div><div class="criterion-num">Mgmt · 08</div></div>
+    <div>
+      <div class="criterion-title">ทรัพยากรมนุษย์ <em>(Human Resources)</em></div>
+      <div class="criterion-desc">การบริหารจัดการทรัพยากรบุคคลสามารถส่งเสริมความเป็นองค์กรนวัตกรรม เกณฑ์นี้มีความเกี่ยวเนื่องกับมิติ Mann ด้านการสร้างสรรค์ โดยแนวทางการคัดเลือกและทิศทางของการสรรหาบุคลากรจะเป็นตัวกำหนดทิศทางองค์กร</div>
+      <div><span class="sub-label">HR in innovation</span><span class="sub-label">Employee wellbeing</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q3.</span> ระดับการจัดการทรัพยากรมนุษย์ด้านนวัตกรรมในองค์กร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้านทรัพยากรมนุษย์</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การสรรหาและคัดเลือกบุคลากรที่มีความสร้างสรรค์<span class="sub-en">Recruitment for innovation capability</span></td>
+          <td class="radio-cell"><input type="radio" name="hr_rec" value="1" id="hr1"><label for="hr1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="hr_rec" value="2" id="hr2"><label for="hr2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="hr_rec" value="3" id="hr3"><label for="hr3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="hr_rec" value="4" id="hr4"><label for="hr4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="hr_rec" value="5" id="hr5"><label for="hr5">5</label></td></tr>
+        <tr class="likert-row"><td>การพัฒนาและฝึกอบรมด้านนวัตกรรม<span class="sub-en">Innovation training & development</span></td>
+          <td class="radio-cell"><input type="radio" name="hr_train" value="1" id="ht1"><label for="ht1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="hr_train" value="2" id="ht2"><label for="ht2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="hr_train" value="3" id="ht3"><label for="ht3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="hr_train" value="4" id="ht4"><label for="ht4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="hr_train" value="5" id="ht5"><label for="ht5">5</label></td></tr>
+        <tr class="likert-row"><td>การประเมินผลและให้รางวัลด้านนวัตกรรม<span class="sub-en">Performance evaluation & innovation reward</span></td>
+          <td class="radio-cell"><input type="radio" name="hr_eval" value="1" id="hev1"><label for="hev1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="hr_eval" value="2" id="hev2"><label for="hev2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="hr_eval" value="3" id="hev3"><label for="hev3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="hr_eval" value="4" id="hev4"><label for="hev4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="hr_eval" value="5" id="hev5"><label for="hev5">5</label></td></tr>
+        <tr class="likert-row"><td>ความเป็นอยู่ที่ดีและความพึงพอใจของพนักงาน<span class="sub-en">Employee wellbeing & satisfaction</span></td>
+          <td class="radio-cell"><input type="radio" name="hr_well" value="1" id="hw1"><label for="hw1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="hr_well" value="2" id="hw2"><label for="hw2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="hr_well" value="3" id="hw3"><label for="hw3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="hr_well" value="4" id="hw4"><label for="hw4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="hr_well" value="5" id="hw5"><label for="hw5">5</label></td></tr>
+        <tr class="likert-row"><td>การจัดการแผนทรัพยากรบุคคลระยะยาว<span class="sub-en">Long-term HR planning</span></td>
+          <td class="radio-cell"><input type="radio" name="hr_plan" value="1" id="hp1"><label for="hp1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="hr_plan" value="2" id="hp2"><label for="hp2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="hr_plan" value="3" id="hp3"><label for="hp3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="hr_plan" value="4" id="hp4"><label for="hp4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="hr_plan" value="5" id="hp5"><label for="hp5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 3: BUSINESS PLAN -->
+<div class="section-card" id="sec3">
+  <div class="section-header">
+    <div><div class="criterion-num">Mgmt · 09</div></div>
+    <div>
+      <div class="criterion-title">แผนธุรกิจ <em>(Business Plan / Model)</em></div>
+      <div class="criterion-desc">แผนธุรกิจเป็นแนวทางในการดำเนินธุรกิจและสร้างมูลค่าให้กับลูกค้า ประกอบด้วย <strong style="color:var(--accent)">Clear Understanding</strong> ความเข้าใจที่ชัดเจน, <strong style="color:var(--teal)">Game Changing</strong> การสร้างความเปลี่ยนแปลง, <strong style="color:var(--gold)">Operational Objective</strong> เป้าหมายการดำเนินงาน</div>
+      <div><span class="sub-label">Clear understanding</span><span class="sub-label">BP rely on game changing</span><span class="sub-label">Operational objective</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q4.</span> แผนธุรกิจขององค์กรท่านมีลักษณะอย่างไร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">คุณลักษณะแผนธุรกิจ</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>ความชัดเจนของโมเดลธุรกิจ<span class="sub-en">Clear understanding of business model</span></td>
+          <td class="radio-cell"><input type="radio" name="bp_clear" value="1" id="bc1"><label for="bc1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="bp_clear" value="2" id="bc2"><label for="bc2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="bp_clear" value="3" id="bc3"><label for="bc3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="bp_clear" value="4" id="bc4"><label for="bc4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="bp_clear" value="5" id="bc5"><label for="bc5">5</label></td></tr>
+        <tr class="likert-row"><td>การพึ่งพาการเปลี่ยนแปลงเชิงกลยุทธ์<span class="sub-en">BP relies on game-changing innovation</span></td>
+          <td class="radio-cell"><input type="radio" name="bp_game" value="1" id="bg1"><label for="bg1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="bp_game" value="2" id="bg2"><label for="bg2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="bp_game" value="3" id="bg3"><label for="bg3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="bp_game" value="4" id="bg4"><label for="bg4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="bp_game" value="5" id="bg5"><label for="bg5">5</label></td></tr>
+        <tr class="likert-row"><td>เป้าหมายการดำเนินงานที่วัดได้<span class="sub-en">Clear operational objectives</span></td>
+          <td class="radio-cell"><input type="radio" name="bp_ops" value="1" id="bo1"><label for="bo1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="bp_ops" value="2" id="bo2"><label for="bo2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="bp_ops" value="3" id="bo3"><label for="bo3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="bp_ops" value="4" id="bo4"><label for="bo4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="bp_ops" value="5" id="bo5"><label for="bo5">5</label></td></tr>
+        <tr class="likert-row"><td>การเชื่อมโยงแผนธุรกิจกับเป้าหมายนวัตกรรม<span class="sub-en">BP linked to innovation goals</span></td>
+          <td class="radio-cell"><input type="radio" name="bp_link" value="1" id="bl1"><label for="bl1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="bp_link" value="2" id="bl2"><label for="bl2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="bp_link" value="3" id="bl3"><label for="bl3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="bp_link" value="4" id="bl4"><label for="bl4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="bp_link" value="5" id="bl5"><label for="bl5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q5.</span> โปรดอธิบาย Business Model ปัจจุบันขององค์กรโดยย่อ</div>
+    <textarea class="q-textarea" name="bm_text" placeholder="อธิบาย Business Model ขององค์กร เช่น กลุ่มลูกค้าเป้าหมาย คุณค่าที่นำเสนอ ช่องทาง รายได้..."></textarea>
+  </div>
+</div>
+
+<!-- SEC 4: MARKETING -->
+<div class="section-card" id="sec4">
+  <div class="section-header">
+    <div><div class="criterion-num">Mgmt · 10</div></div>
+    <div>
+      <div class="criterion-title">การตลาด <em>(Marketing)</em></div>
+      <div class="criterion-desc">การตลาดด้านนวัตกรรมมุ่งเน้นที่ <strong style="color:var(--accent)">Clear Market Focus</strong> — ความชัดเจนในกลุ่มตลาดเป้าหมาย และ <strong style="color:var(--teal)">Create and Deliver Value</strong> — การสร้างและส่งมอบคุณค่าให้ลูกค้า</div>
+      <div><span class="sub-label">Clear market-focus</span><span class="sub-label">Create and deliver value</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q6.</span> ระดับความสามารถด้านการตลาดนวัตกรรมขององค์กร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้านการตลาด</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>ความชัดเจนของกลุ่มตลาดเป้าหมาย<span class="sub-en">Clear market focus &amp; target segment</span></td>
+          <td class="radio-cell"><input type="radio" name="mkt_focus" value="1" id="mf1"><label for="mf1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mkt_focus" value="2" id="mf2"><label for="mf2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mkt_focus" value="3" id="mf3"><label for="mf3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mkt_focus" value="4" id="mf4"><label for="mf4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mkt_focus" value="5" id="mf5"><label for="mf5">5</label></td></tr>
+        <tr class="likert-row"><td>การสร้างคุณค่าที่แตกต่างสำหรับลูกค้า<span class="sub-en">Create differentiated value proposition</span></td>
+          <td class="radio-cell"><input type="radio" name="mkt_value" value="1" id="mv1"><label for="mv1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mkt_value" value="2" id="mv2"><label for="mv2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mkt_value" value="3" id="mv3"><label for="mv3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mkt_value" value="4" id="mv4"><label for="mv4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mkt_value" value="5" id="mv5"><label for="mv5">5</label></td></tr>
+        <tr class="likert-row"><td>การส่งมอบคุณค่าและประสบการณ์ลูกค้า<span class="sub-en">Deliver value &amp; customer experience</span></td>
+          <td class="radio-cell"><input type="radio" name="mkt_deliver" value="1" id="md1"><label for="md1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mkt_deliver" value="2" id="md2"><label for="md2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mkt_deliver" value="3" id="md3"><label for="md3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mkt_deliver" value="4" id="md4"><label for="md4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mkt_deliver" value="5" id="md5"><label for="md5">5</label></td></tr>
+        <tr class="likert-row"><td>การวิเคราะห์แนวโน้มตลาดและคู่แข่ง<span class="sub-en">Market trend &amp; competitor analysis</span></td>
+          <td class="radio-cell"><input type="radio" name="mkt_trend" value="1" id="mt1"><label for="mt1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mkt_trend" value="2" id="mt2"><label for="mt2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mkt_trend" value="3" id="mt3"><label for="mt3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mkt_trend" value="4" id="mt4"><label for="mt4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mkt_trend" value="5" id="mt5"><label for="mt5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 5: FINANCE -->
+<div class="section-card" id="sec5">
+  <div class="section-header">
+    <div><div class="criterion-num">Mgmt · 11</div></div>
+    <div>
+      <div class="criterion-title">การเงิน <em>(Finance)</em></div>
+      <div class="criterion-desc">การจัดการทางการเงินสำหรับกระบวนการนวัตกรรม ครอบคลุม <strong style="color:var(--accent)">Income from Sales</strong> รายได้จากการขาย iGoods และ <strong style="color:var(--teal)">Ability to Access Finance</strong> ความสามารถในการเข้าถึงแหล่งเงินทุนเพื่อการนวัตกรรม</div>
+      <div><span class="sub-label">Income from sales</span><span class="sub-label">Ability to access finance</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q7.</span> ระดับความสามารถด้านการเงินเพื่อนวัตกรรม</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้านการเงิน</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>รายได้จากการขายผลิตภัณฑ์/บริการนวัตกรรม<span class="sub-en">Income from innovation sales (iGoods)</span></td>
+          <td class="radio-cell"><input type="radio" name="fin_income" value="1" id="fi1"><label for="fi1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="fin_income" value="2" id="fi2"><label for="fi2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="fin_income" value="3" id="fi3"><label for="fi3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="fin_income" value="4" id="fi4"><label for="fi4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="fin_income" value="5" id="fi5"><label for="fi5">5</label></td></tr>
+        <tr class="likert-row"><td>ความสามารถในการเข้าถึงแหล่งเงินทุน<span class="sub-en">Ability to access finance &amp; investment</span></td>
+          <td class="radio-cell"><input type="radio" name="fin_access" value="1" id="fa1"><label for="fa1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="fin_access" value="2" id="fa2"><label for="fa2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="fin_access" value="3" id="fa3"><label for="fa3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="fin_access" value="4" id="fa4"><label for="fa4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="fin_access" value="5" id="fa5"><label for="fa5">5</label></td></tr>
+        <tr class="likert-row"><td>งบประมาณด้านนวัตกรรมและ R&amp;D<span class="sub-en">Dedicated innovation / R&amp;D budget</span></td>
+          <td class="radio-cell"><input type="radio" name="fin_budget" value="1" id="fb1"><label for="fb1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="fin_budget" value="2" id="fb2"><label for="fb2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="fin_budget" value="3" id="fb3"><label for="fb3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="fin_budget" value="4" id="fb4"><label for="fb4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="fin_budget" value="5" id="fb5"><label for="fb5">5</label></td></tr>
+        <tr class="likert-row"><td>การติดตามผลตอบแทนการลงทุนด้านนวัตกรรม<span class="sub-en">ROI tracking for innovation investments</span></td>
+          <td class="radio-cell"><input type="radio" name="fin_roi" value="1" id="fr1"><label for="fr1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="fin_roi" value="2" id="fr2"><label for="fr2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="fin_roi" value="3" id="fr3"><label for="fr3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="fin_roi" value="4" id="fr4"><label for="fr4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="fin_roi" value="5" id="fr5"><label for="fr5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 6: SUPPLY CHAIN -->
+<div class="section-card" id="sec6">
+  <div class="section-header">
+    <div><div class="criterion-num">Mgmt · 12</div></div>
+    <div>
+      <div class="criterion-title">ซัพพลายเชน <em>(Supply Chain)</em></div>
+      <div class="criterion-desc">การจัดการห่วงโซ่อุปทานหมายถึงพื้นที่ที่มีคุณค่าทั้งหมดที่ส่งมอบให้กับลูกค้า ประกอบด้วย <strong style="color:var(--accent)">Network of Facilities</strong> เครือข่ายของสิ่งอำนวยความสะดวก และ <strong style="color:var(--teal)">IT Integration</strong> การบูรณาการเทคโนโลยีสารสนเทศ</div>
+      <div><span class="sub-label">Network of facilities</span><span class="sub-label">IT integration in supply chain</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q8.</span> ระดับการจัดการด้านซัพพลายเชน</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้านซัพพลายเชน</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การส่งต่อสินค้าจากซัพพลายเออร์<span class="sub-en">Material flow from supplier</span></td>
+          <td class="radio-cell"><input type="radio" name="sc_sup" value="1" id="ss1"><label for="ss1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sc_sup" value="2" id="ss2"><label for="ss2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sc_sup" value="3" id="ss3"><label for="ss3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sc_sup" value="4" id="ss4"><label for="ss4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sc_sup" value="5" id="ss5"><label for="ss5">5</label></td></tr>
+        <tr class="likert-row"><td>กระบวนการแปรรูปสู่สินค้าสำเร็จรูป<span class="sub-en">Transformation of material into finished goods</span></td>
+          <td class="radio-cell"><input type="radio" name="sc_trans" value="1" id="st1x"><label for="st1x">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sc_trans" value="2" id="st2x"><label for="st2x">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sc_trans" value="3" id="st3x"><label for="st3x">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sc_trans" value="4" id="st4x"><label for="st4x">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sc_trans" value="5" id="st5x"><label for="st5x">5</label></td></tr>
+        <tr class="likert-row"><td>การส่งมอบสินค้าแก่ลูกค้า<span class="sub-en">Delivery of iGood to customer</span></td>
+          <td class="radio-cell"><input type="radio" name="sc_del" value="1" id="sd1"><label for="sd1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sc_del" value="2" id="sd2"><label for="sd2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sc_del" value="3" id="sd3"><label for="sd3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sc_del" value="4" id="sd4"><label for="sd4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sc_del" value="5" id="sd5"><label for="sd5">5</label></td></tr>
+        <tr class="likert-row"><td>การนำระบบ IT เข้ามาช่วยในการจัดการ<span class="sub-en">Contribution of IT integration in supply chain</span></td>
+          <td class="radio-cell"><input type="radio" name="sc_it" value="1" id="si1"><label for="si1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sc_it" value="2" id="si2"><label for="si2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sc_it" value="3" id="si3"><label for="si3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sc_it" value="4" id="si4"><label for="si4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sc_it" value="5" id="si5"><label for="si5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results-panel">
+  <div class="results-header">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--teal);letter-spacing:0.1em;margin-bottom:10px">MANAGEMENT DIMENSION ASSESSMENT COMPLETE</div>
+    <h2>ผลการประเมินมิติ Management</h2>
+    <p>Organizational Management Dimension · TIM5 Diamond-Ring Model</p>
+  </div>
+  <div class="overall-wrap">
+    <div class="overall-score" id="overallPct">—</div>
+    <div class="overall-label">คะแนนรวม Management Dimension (%)</div>
+    <div class="overall-level" id="overallLevel"></div>
+  </div>
+  <div class="score-grid" id="scoreGrid"></div>
+  <div class="radar-wrap">
+    <div class="radar-title">Management Dimension — Sub-Criteria Score Profile</div>
+    <canvas id="radarChart" width="480" height="320" style="max-width:100%"></canvas>
+  </div>
+  <div id="interpCards"></div>
+</div>
+
+<div class="nav-bar" id="navBar">
+  <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)" style="display:none">← ก่อนหน้า</button>
+  <div class="section-indicator" id="sectionHint"></div>
+  <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">ถัดไป →</button>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const SECTIONS=6,sectionNames=['กลยุทธ์ (Strategies)','ทรัพยากรมนุษย์ (HR)','แผนธุรกิจ (Business Plan)','การตลาด (Marketing)','การเงิน (Finance)','ซัพพลายเชน (Supply Chain)'];
+let current=1;
+const dotsWrap=document.getElementById('stepDots');
+for(let i=1;i<=SECTIONS;i++){const d=document.createElement('div');d.className='step-dot'+(i===1?' active':'');d.id='dot'+i;dotsWrap.appendChild(d)}
+function updateUI(){for(let i=1;i<=SECTIONS;i++){document.getElementById('sec'+i).classList.toggle('visible',i===current);const d=document.getElementById('dot'+i);d.className='step-dot'+(i<current?' done':i===current?' active':'')}document.getElementById('stepLabel').textContent=current;document.getElementById('sectionHint').textContent=sectionNames[current-1];document.getElementById('prevBtn').style.display=current>1?'inline-flex':'none';const nb=document.getElementById('nextBtn');if(current===SECTIONS){nb.textContent='ดูผลการประเมิน ✓';nb.className='btn btn-success'}else{nb.textContent='ถัดไป →';nb.className='btn btn-primary'}}
+function navigate(dir){if(current+dir>SECTIONS){showResults();return}current=Math.max(1,Math.min(SECTIONS,current+dir));updateUI();window.scrollTo({top:0,behavior:'smooth'})}
+function getAvg(names){let t=0,c=0;names.forEach(n=>{const v=document.querySelector(`input[name="${n}"]:checked`);if(v){t+=parseInt(v.value);c++}});return c>0?t/c:0}
+function getCheck(names){let c=0;names.forEach(n=>{if(document.querySelector(`input[name="${n}"]:checked`))c++});return c}
+function showResults(){
+  for(let i=1;i<=SECTIONS;i++)document.getElementById('sec'+i).classList.remove('visible');
+  document.getElementById('navBar').style.display='none';
+  document.getElementById('results-panel').classList.add('visible');
+  const scores={
+    strategies:getAvg(['strat_top','strat_mid','strat_emp','strat_eval']),
+    hr:getAvg(['hr_rec','hr_train','hr_eval','hr_well','hr_plan']),
+    bizplan:getAvg(['bp_clear','bp_game','bp_ops','bp_link']),
+    marketing:getAvg(['mkt_focus','mkt_value','mkt_deliver','mkt_trend']),
+    finance:getAvg(['fin_income','fin_access','fin_budget','fin_roi']),
+    supplychain:getAvg(['sc_sup','sc_trans','sc_del','sc_it'])
+  };
+  const pcts={};Object.keys(scores).forEach(k=>{pcts[k]=Math.round((scores[k]/5)*100)});
+  const overall=Math.round(Object.values(pcts).reduce((a,b)=>a+b,0)/6);
+  document.getElementById('overallPct').textContent=overall+'%';
+  let level='',lc='';
+  if(overall>=85){level='★ ความเป็นเลิศด้านการจัดการ';lc='background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3)'}
+  else if(overall>=70){level='✦ ขั้นสูง — จัดการเชิงกลยุทธ์';lc='background:rgba(52,211,153,0.12);color:#34d399;border:1px solid rgba(52,211,153,0.3)'}
+  else if(overall>=50){level='◈ กำลังพัฒนา';lc='background:rgba(96,165,250,0.12);color:#60a5fa;border:1px solid rgba(96,165,250,0.3)'}
+  else if(overall>=30){level='◇ ระยะเริ่มต้น';lc='background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)'}
+  else{level='○ ต้องพัฒนา';lc='background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.3)'}
+  const lvlEl=document.getElementById('overallLevel');lvlEl.textContent=level;lvlEl.style.cssText=lc;
+  const cards=[
+    {key:'strategies',label:'กลยุทธ์',en:'Strategies',cls:'c1',color:'#f59e0b'},
+    {key:'hr',label:'ทรัพยากรมนุษย์',en:'Human Resources',cls:'c2',color:'#60a5fa'},
+    {key:'bizplan',label:'แผนธุรกิจ',en:'Business Plan',cls:'c3',color:'#a78bfa'},
+    {key:'marketing',label:'การตลาด',en:'Marketing',cls:'c4',color:'#34d399'},
+    {key:'finance',label:'การเงิน',en:'Finance',cls:'c5',color:'#f87171'},
+    {key:'supplychain',label:'ซัพพลายเชน',en:'Supply Chain',cls:'c6',color:'#2dd4bf'}
+  ];
+  const grid=document.getElementById('scoreGrid');grid.innerHTML='';
+  cards.forEach(c=>{grid.innerHTML+=`<div class="score-card ${c.cls}"><div class="criterion-tag">${c.en}</div><div class="score-val">${pcts[c.key]}%</div><div class="score-label">${c.label}</div></div>`});
+  const ie=document.getElementById('interpCards');
+  ie.innerHTML='<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#f59e0b"></div><div class="interp-title">คะแนนย่อยแต่ละเกณฑ์ Management Dimension</div></div>'+cards.map(c=>`<div class="bar-row"><div class="bar-label">${c.label}</div><div class="bar-track"><div class="bar-fill" style="width:${pcts[c.key]}%;background:${c.color}"></div></div><div class="bar-score">${pcts[c.key]}%</div></div>`).join('')+'</div>';
+  if(pcts.strategies<50)ie.innerHTML+=`<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#f59e0b"></div><div class="interp-title">ปรับปรุง: กลยุทธ์</div></div><div class="interp-body">ควรพัฒนาการกำหนดและเผยแพร่กลยุทธ์นวัตกรรมให้ชัดเจนในทุกระดับองค์กร เชื่อมโยงกลยุทธ์กับเป้าหมาย iGood และ iHuman อย่างเป็นรูปธรรม</div></div>`;
+  if(pcts.bizplan<50)ie.innerHTML+=`<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#a78bfa"></div><div class="interp-title">พัฒนา: Business Model</div></div><div class="interp-body">ควรทบทวนและพัฒนา Business Model ให้สอดคล้องกับกลยุทธ์นวัตกรรม โดยเฉพาะการสร้างคุณค่าที่แตกต่างและช่องทางการส่งมอบที่ชัดเจน</div></div>`;
+  if(pcts.finance<50)ie.innerHTML+=`<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#f87171"></div><div class="interp-title">เร่งพัฒนา: การเงิน</div></div><div class="interp-body">ควรเพิ่มงบประมาณ R&D และหาแหล่งเงินทุนสนับสนุนนวัตกรรมเพิ่มเติม เช่น กองทุน NIA, BOI, สินเชื่อพิเศษเพื่อนวัตกรรม</div></div>`;
+  const ctx=document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx,{type:'radar',data:{labels:['Strategies','HR','Business Plan','Marketing','Finance','Supply Chain'],datasets:[{label:'Management Score (%)',data:cards.map(c=>pcts[c.key]),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.12)',borderWidth:2,pointBackgroundColor:cards.map(c=>c.color),pointRadius:5,pointHoverRadius:7}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:100,ticks:{color:'#8890a8',font:{size:10},stepSize:20,backdropColor:'transparent'},grid:{color:'rgba(255,255,255,0.08)'},angleLines:{color:'rgba(255,255,255,0.08)'},pointLabels:{color:'#e8eaf2',font:{size:12,family:"'IBM Plex Mono',monospace"}}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.r}%`},backgroundColor:'#1c2030',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,titleColor:'#e8eaf2',bodyColor:'#8890a8'}}}});
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+updateUI();
+</script>
+</body>
+</html>

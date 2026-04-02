@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIM5 — มิติที่ 5: Material</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0f14;--surface:#141720;--surface2:#1c2030;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#e8eaf2;--muted:#8890a8;--accent:#4ade80;--gold:#f5c842;--teal:#2dd4bf;--score1:#f87171;--score2:#fbbf24;--score3:#60a5fa;--score4:#34d399;--score5:#a78bfa;--font:'Sarabun',sans-serif;--mono:'IBM Plex Mono',monospace;--r:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.6;min-height:100vh}
+.header{background:linear-gradient(135deg,#0d0f14 0%,#0a1a0d 50%,#0d0f14 100%);border-bottom:1px solid var(--border2);padding:28px 36px 24px;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(74,222,128,0.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(74,222,128,0.07) 0%,transparent 55%);pointer-events:none}
+.header-badge{display:inline-flex;align-items:center;background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.3);border-radius:20px;padding:4px 14px;font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.06em;margin-bottom:16px}
+.header-title{font-size:28px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:6px}
+.header-title span{color:var(--accent)}
+.header-sub{font-size:14px;color:var(--muted);font-family:var(--mono)}
+.header-meta{position:absolute;top:28px;right:36px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8}
+.header-meta strong{color:var(--accent)}
+.progress-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 36px;display:flex;align-items:center;gap:20px}
+.progress-steps{display:flex;gap:6px;flex:1}
+.step-dot{height:4px;flex:1;border-radius:2px;background:var(--border2);transition:background 0.4s}
+.step-dot.active{background:var(--accent)}.step-dot.done{background:var(--teal)}
+.progress-label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.progress-label strong{color:var(--text)}
+.content{max-width:860px;margin:0 auto;padding:32px 36px 80px}
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:24px;overflow:hidden;display:none;animation:fadeUp 0.35s ease}
+.section-card.visible{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.section-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px}
+.criterion-num{font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);border-radius:6px;padding:3px 8px;white-space:nowrap;margin-top:2px}
+.criterion-title{font-size:18px;font-weight:600;color:#fff;line-height:1.3}
+.criterion-title em{font-style:normal;color:var(--muted);font-size:14px;font-weight:400;margin-left:8px}
+.criterion-desc{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.7}
+.sub-label{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;padding:2px 7px;margin-top:10px;margin-right:6px}
+.q-block{padding:20px 24px;border-bottom:1px solid var(--border)}.q-block:last-child{border-bottom:none}
+.q-label{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:4px}
+.q-label .q-num{font-family:var(--mono);font-size:11px;color:var(--accent);margin-right:8px}
+.q-sublabel{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.likert-table{width:100%;border-collapse:collapse}
+.likert-table th{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding:0 6px 8px;white-space:nowrap}
+.scale-headers th:nth-child(2){color:var(--score1)}.scale-headers th:nth-child(3){color:var(--score2)}.scale-headers th:nth-child(4){color:var(--score3)}.scale-headers th:nth-child(5){color:var(--score4)}.scale-headers th:nth-child(6){color:var(--score5)}
+.likert-row td{padding:7px 6px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.likert-row:last-child td{border-bottom:none}
+.likert-row td:first-child{color:var(--text);padding-right:14px;font-size:13px;line-height:1.5;min-width:200px}
+.likert-row td:not(:first-child){text-align:center;width:60px}
+.sub-en{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:1px}
+.radio-cell input[type="radio"]{display:none}
+.radio-cell label{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;transition:all 0.18s;background:transparent;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.radio-cell label:hover{border-color:var(--accent);color:var(--accent);background:rgba(74,222,128,0.08)}
+.radio-cell input:checked+label{background:var(--score1);border-color:var(--score1);color:#fff;font-weight:600;box-shadow:0 0 12px rgba(248,113,113,0.4)}
+.score-2 input:checked+label{background:var(--score2);border-color:var(--score2);box-shadow:0 0 12px rgba(251,191,36,0.4)}
+.score-3 input:checked+label{background:var(--score3);border-color:var(--score3);box-shadow:0 0 12px rgba(96,165,250,0.4)}
+.score-4 input:checked+label{background:var(--score4);border-color:var(--score4);box-shadow:0 0 12px rgba(52,211,153,0.4)}
+.score-5 input:checked+label{background:var(--score5);border-color:var(--score5);box-shadow:0 0 12px rgba(167,139,250,0.4)}
+.checkbox-group{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.checkbox-item{display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.checkbox-item input[type="checkbox"]{display:none}
+.check-box{width:18px;height:18px;min-width:18px;border:1.5px solid var(--border2);border-radius:4px;margin-top:2px;transition:all 0.18s;display:flex;align-items:center;justify-content:center;font-size:11px}
+.checkbox-item input:checked~.check-box{background:var(--accent);border-color:var(--accent);color:#0d1a0d}
+.checkbox-item input:checked~.check-box::after{content:'✓'}
+.check-text{font-size:13px;color:var(--text);line-height:1.5}
+.check-text em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.q-textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;padding:10px 14px;resize:vertical;min-height:80px;margin-top:8px;transition:border 0.2s;outline:none}
+.q-textarea:focus{border-color:var(--accent)}.q-textarea::placeholder{color:var(--muted)}
+.nav-bar{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:600;transition:all 0.2s}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--muted)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:#0d1a0d;box-shadow:0 4px 14px rgba(74,222,128,0.3)}.btn-primary:hover{background:#22c55e;transform:translateY(-1px)}
+.btn-success{background:var(--teal);color:#0d1a18;box-shadow:0 4px 14px rgba(45,212,191,0.3)}
+.section-indicator{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
+#results-panel{display:none}#results-panel.visible{display:block;animation:fadeUp 0.4s ease}
+.results-header{text-align:center;padding:40px 24px 32px}
+.results-header h2{font-size:26px;font-weight:700;color:#fff;margin-bottom:8px}
+.results-header p{font-size:14px;color:var(--muted)}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 28px}
+.score-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;text-align:center;position:relative;overflow:hidden}
+.score-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.score-card.c1::before{background:#4ade80}.score-card.c2::before{background:#60a5fa}.score-card.c3::before{background:#f59e0b}.score-card.c4::before{background:#34d399}.score-card.c5::before{background:#2dd4bf}.score-card.c6::before{background:#f87171}
+.score-card .criterion-tag{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.score-card .score-val{font-size:30px;font-weight:700;color:#fff;line-height:1;margin-bottom:4px}
+.score-card .score-label{font-size:12px;color:var(--muted);margin-top:8px}
+.radar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:24px;text-align:center}
+.radar-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;font-family:var(--mono);margin-bottom:18px}
+.interpretation-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;margin-bottom:14px}
+.interp-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.interp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.interp-title{font-size:14px;font-weight:600;color:#fff}
+.interp-body{font-size:13.5px;color:var(--muted);line-height:1.75}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bar-label{font-size:12px;color:var(--text);min-width:140px;font-family:var(--mono)}
+.bar-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.8s cubic-bezier(0.16,1,0.3,1)}
+.bar-score{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:36px;text-align:right}
+.overall-wrap{background:linear-gradient(135deg,rgba(74,222,128,0.08),rgba(74,222,128,0.04));border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);padding:28px;text-align:center;margin-bottom:24px}
+.overall-score{font-size:72px;font-weight:700;color:var(--accent);line-height:1;font-family:var(--mono)}
+.overall-label{font-size:14px;color:var(--muted);margin-top:6px;font-family:var(--mono)}
+.overall-level{display:inline-block;margin-top:14px;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:600}
+@media(max-width:640px){.header{padding:20px}.content{padding:20px 16px 60px}.header-meta{display:none}.score-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">NIA Thailand · TIM5 Framework · Diamond-Ring Model</div>
+  <h1 class="header-title">มิติที่ 5: <span>Material</span> — การจัดการวัสดุเพื่อสังคมและสิ่งแวดล้อม</h1>
+  <p class="header-sub">Material Management Dimension Assessment · Non-Assisted Version</p>
+  <div class="header-meta">
+    <div>5 Dimensions · 30 Criteria · 68 Sub-criteria</div>
+    <div>Total Innovation Management <strong>TIM⁵</strong></div>
+    <div style="margin-top:4px">Pantapong Tangteerasunun · NIA Bangkok</div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-steps" id="stepDots"></div>
+  <div class="progress-label">ส่วนที่ <strong id="stepLabel">1</strong> จาก <strong>6</strong></div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════
+     SEC 1 · Material · 25 — การควบคุมวัสดุ
+═══════════════════════════════════════════ -->
+<div class="section-card visible" id="sec1">
+  <div class="section-header">
+    <div><div class="criterion-num">Mat · 25</div></div>
+    <div>
+      <div class="criterion-title">การควบคุมวัสดุ <em>(Material Control)</em></div>
+      <div class="criterion-desc">
+        นวัตกรรมเชิงเทคโนโลยีต้องมีฝ่ายเทคนิคที่ทำหน้าที่ในการเตรียมและควบคุมด้านวัสดุ ด้านการเงิน และด้านทักษะของผู้ปฏิบัติงาน
+        การควบคุมวัสดุคือกระบวนการเฉพาะที่รวมถึง <strong style="color:var(--accent)">การวางแผนการจัดการเคลื่อนของวัสดุ (Material Flow)</strong>
+        ตั้งแต่การจัดซื้อจนถึงขั้นการผลิต วัตถุประสงค์คือการจัดการ คุณภาพ ปริมาณ และต้นทุน
+      </div>
+      <div><span class="sub-label">Material flow planning</span><span class="sub-label">Quality &amp; quantity control</span><span class="sub-label">Cost management</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q1.</span> ระดับการควบคุมวัสดุในกระบวนการผลิตขององค์กร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers">
+        <th style="text-align:left">ด้านการควบคุมวัสดุ</th>
+        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+      </tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การวางแผนการเคลื่อนของวัสดุ (Material Flow Planning)<span class="sub-en">Material flow planning from procurement to production</span></td>
+          <td class="radio-cell"><input type="radio" name="mc_flow" value="1" id="m1a"><label for="m1a">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mc_flow" value="2" id="m2a"><label for="m2a">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mc_flow" value="3" id="m3a"><label for="m3a">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mc_flow" value="4" id="m4a"><label for="m4a">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mc_flow" value="5" id="m5a"><label for="m5a">5</label></td></tr>
+        <tr class="likert-row"><td>การควบคุมคุณภาพวัสดุและวัตถุดิบ<span class="sub-en">Material &amp; raw material quality control</span></td>
+          <td class="radio-cell"><input type="radio" name="mc_qual" value="1" id="mq1"><label for="mq1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mc_qual" value="2" id="mq2"><label for="mq2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mc_qual" value="3" id="mq3"><label for="mq3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mc_qual" value="4" id="mq4"><label for="mq4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mc_qual" value="5" id="mq5"><label for="mq5">5</label></td></tr>
+        <tr class="likert-row"><td>การควบคุมปริมาณและสินค้าคงคลัง<span class="sub-en">Quantity control &amp; inventory management</span></td>
+          <td class="radio-cell"><input type="radio" name="mc_qty" value="1" id="mqt1"><label for="mqt1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mc_qty" value="2" id="mqt2"><label for="mqt2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mc_qty" value="3" id="mqt3"><label for="mqt3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mc_qty" value="4" id="mqt4"><label for="mqt4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mc_qty" value="5" id="mqt5"><label for="mqt5">5</label></td></tr>
+        <tr class="likert-row"><td>การควบคุมต้นทุนการดำเนินงานและการผลิต<span class="sub-en">Operational &amp; production cost control</span></td>
+          <td class="radio-cell"><input type="radio" name="mc_cost" value="1" id="mco1"><label for="mco1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mc_cost" value="2" id="mco2"><label for="mco2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mc_cost" value="3" id="mco3"><label for="mco3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mc_cost" value="4" id="mco4"><label for="mco4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mc_cost" value="5" id="mco5"><label for="mco5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SEC 2 · Material · 26 — การเปลี่ยนองค์ประกอบ
+═══════════════════════════════════════════ -->
+<div class="section-card" id="sec2">
+  <div class="section-header">
+    <div><div class="criterion-num">Mat · 26</div></div>
+    <div>
+      <div class="criterion-title">การเปลี่ยนองค์ประกอบ <em>(Component Change)</em></div>
+      <div class="criterion-desc">
+        นวัตกรรมระดับองค์ประกอบ คือการเปลี่ยนแปลงหรือปรับปรุงชิ้นส่วนย่อยในระดับองค์ประกอบ
+        เพื่อสร้างความแตกต่างและเพิ่มคุณค่าให้กับผลิตภัณฑ์ รวมถึงการพิจารณาเลือกองค์ประกอบที่
+        <strong style="color:var(--accent)">เป็นมิตรกับสิ่งแวดล้อม</strong> (Eco-friendly components)
+      </div>
+      <div><span class="sub-label">Component substitution</span><span class="sub-label">Eco-friendly evaluation</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q2.</span> ระดับการเปลี่ยนแปลงองค์ประกอบเพื่อนวัตกรรม</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers">
+        <th style="text-align:left">ด้านการเปลี่ยนองค์ประกอบ</th>
+        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+      </tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การประเมินและทดสอบองค์ประกอบทดแทน<span class="sub-en">Component substitution evaluation &amp; testing</span></td>
+          <td class="radio-cell"><input type="radio" name="cc_sub" value="1" id="cs1"><label for="cs1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cc_sub" value="2" id="cs2"><label for="cs2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cc_sub" value="3" id="cs3"><label for="cs3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cc_sub" value="4" id="cs4"><label for="cs4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cc_sub" value="5" id="cs5"><label for="cs5">5</label></td></tr>
+        <tr class="likert-row"><td>การเลือกองค์ประกอบที่เป็นมิตรต่อสิ่งแวดล้อม<span class="sub-en">Eco-friendly component selection</span></td>
+          <td class="radio-cell"><input type="radio" name="cc_eco" value="1" id="ce1"><label for="ce1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cc_eco" value="2" id="ce2"><label for="ce2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cc_eco" value="3" id="ce3"><label for="ce3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cc_eco" value="4" id="ce4"><label for="ce4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cc_eco" value="5" id="ce5"><label for="ce5">5</label></td></tr>
+        <tr class="likert-row"><td>การเปลี่ยนองค์ประกอบเพื่อลดต้นทุนโดยไม่ลดคุณภาพ<span class="sub-en">Component change for cost reduction without quality loss</span></td>
+          <td class="radio-cell"><input type="radio" name="cc_cost" value="1" id="cco1"><label for="cco1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cc_cost" value="2" id="cco2"><label for="cco2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cc_cost" value="3" id="cco3"><label for="cco3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cc_cost" value="4" id="cco4"><label for="cco4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cc_cost" value="5" id="cco5"><label for="cco5">5</label></td></tr>
+        <tr class="likert-row"><td>ผลลัพธ์จากการเปลี่ยนองค์ประกอบต่อนวัตกรรมผลิตภัณฑ์<span class="sub-en">Result of component change on product innovation</span></td>
+          <td class="radio-cell"><input type="radio" name="cc_result" value="1" id="ccr1"><label for="ccr1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cc_result" value="2" id="ccr2"><label for="ccr2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cc_result" value="3" id="ccr3"><label for="ccr3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cc_result" value="4" id="ccr4"><label for="ccr4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cc_result" value="5" id="ccr5"><label for="ccr5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SEC 3 · Material · 27 — การเปลี่ยนระบบ
+═══════════════════════════════════════════ -->
+<div class="section-card" id="sec3">
+  <div class="section-header">
+    <div><div class="criterion-num">Mat · 27</div></div>
+    <div>
+      <div class="criterion-title">การเปลี่ยนระบบ <em>(System Change)</em></div>
+      <div class="criterion-desc">
+        นวัตกรรมระดับระบบ คือการออกแบบหรือปรับเปลี่ยนระบบการผลิต กระบวนการ หรือแพลตฟอร์มเทคโนโลยีทั้งหมดใหม่
+        เป็นการเปลี่ยนแปลงที่ใหญ่กว่าการเปลี่ยนองค์ประกอบ และมักเกี่ยวข้องกับ
+        <strong style="color:var(--accent)">การออกแบบระบบการผลิตใหม่</strong> หรือการเปลี่ยนแพลตฟอร์มเทคโนโลยี
+      </div>
+      <div><span class="sub-label">Production system redesign</span><span class="sub-label">Technology platform change</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q3.</span> ระดับการเปลี่ยนแปลงระบบในกระบวนการผลิต</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers">
+        <th style="text-align:left">ด้านการเปลี่ยนระบบ</th>
+        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+      </tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การออกแบบระบบการผลิตใหม่ทั้งระบบ<span class="sub-en">Full production system redesign</span></td>
+          <td class="radio-cell"><input type="radio" name="sc_design" value="1" id="sd1"><label for="sd1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sc_design" value="2" id="sd2"><label for="sd2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sc_design" value="3" id="sd3"><label for="sd3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sc_design" value="4" id="sd4"><label for="sd4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sc_design" value="5" id="sd5"><label for="sd5">5</label></td></tr>
+        <tr class="likert-row"><td>การเปลี่ยนแพลตฟอร์มเทคโนโลยีการผลิต<span class="sub-en">Manufacturing technology platform change</span></td>
+          <td class="radio-cell"><input type="radio" name="sc_tech" value="1" id="sct1"><label for="sct1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sc_tech" value="2" id="sct2"><label for="sct2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sc_tech" value="3" id="sct3"><label for="sct3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sc_tech" value="4" id="sct4"><label for="sct4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sc_tech" value="5" id="sct5"><label for="sct5">5</label></td></tr>
+        <tr class="likert-row"><td>การบูรณาการระบบอัตโนมัติและดิจิทัล<span class="sub-en">Automation &amp; digital integration</span></td>
+          <td class="radio-cell"><input type="radio" name="sc_auto" value="1" id="sca1"><label for="sca1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sc_auto" value="2" id="sca2"><label for="sca2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sc_auto" value="3" id="sca3"><label for="sca3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sc_auto" value="4" id="sca4"><label for="sca4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sc_auto" value="5" id="sca5"><label for="sca5">5</label></td></tr>
+        <tr class="likert-row"><td>ผลลัพธ์จากการเปลี่ยนระบบต่อประสิทธิภาพการผลิต<span class="sub-en">System change result on production efficiency</span></td>
+          <td class="radio-cell"><input type="radio" name="sc_result" value="1" id="scr1"><label for="scr1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="sc_result" value="2" id="scr2"><label for="scr2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="sc_result" value="3" id="scr3"><label for="scr3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="sc_result" value="4" id="scr4"><label for="scr4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="sc_result" value="5" id="scr5"><label for="scr5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SEC 4 · Material · 28 — การเปลี่ยนวัสดุ
+═══════════════════════════════════════════ -->
+<div class="section-card" id="sec4">
+  <div class="section-header">
+    <div><div class="criterion-num">Mat · 28</div></div>
+    <div>
+      <div class="criterion-title">การเปลี่ยนวัสดุ <em>(Material Change)</em></div>
+      <div class="criterion-desc">
+        การเปลี่ยนแปลงหรือเลือกใช้วัตถุดิบ เป็นเหมือนการปรับปรุงและพัฒนา iGood ให้มีความแตกต่าง
+        และก่อให้เกิดประโยชน์ใหม่ ครอบคลุมการเลือกวัสดุแบบ
+        <strong style="color:var(--accent)">ดั้งเดิม / ใหม่ / พิเศษ</strong> หรือ
+        <strong style="color:var(--green)">เป็นมิตรต่อสิ่งแวดล้อม</strong>
+      </div>
+      <div><span class="sub-label">Conventional</span><span class="sub-label">New/Special</span><span class="sub-label">Eco-friendly</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q4.</span> องค์กรมีการเปลี่ยนแปลงวัสดุในสายการผลิตหรือต้นทุนในระดับใด</div>
+    <div class="q-sublabel">เลือกระดับที่ตรงที่สุดกับสถานการณ์ขององค์กร</div>
+    <div class="checkbox-group">
+      <label class="checkbox-item"><input type="checkbox" name="mch_high"><div class="check-box"></div><span class="check-text">ระดับสูง Almost (80–90%) — มีการเปลี่ยนวัสดุสม่ำเสมอมาก <em>(Almost always changing materials)</em></span></label>
+      <label class="checkbox-item"><input type="checkbox" name="mch_norm"><div class="check-box"></div><span class="check-text">ระดับปกติ Normally (60–70%) — มีการเปลี่ยนวัสดุค่อนข้างบ่อย <em>(Normally changing materials)</em></span></label>
+      <label class="checkbox-item"><input type="checkbox" name="mch_some"><div class="check-box"></div><span class="check-text">ระดับทั่วไป Sometime (30–50%) — เปลี่ยนวัสดุเป็นบางโอกาส <em>(Sometimes changing materials)</em></span></label>
+      <label class="checkbox-item"><input type="checkbox" name="mch_sel"><div class="check-box"></div><span class="check-text">ระดับต่ำ Seldom (10–20%) — เปลี่ยนวัสดุน้อยมาก <em>(Seldom changing materials)</em></span></label>
+      <label class="checkbox-item"><input type="checkbox" name="mch_never"><div class="check-box"></div><span class="check-text">ไม่มีการเปลี่ยนแปลง Never (0%) — ไม่เคยเปลี่ยนวัสดุ <em>(Never changing materials)</em></span></label>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q5.</span> วัตถุดิบหลักในสายการผลิต (อันดับ 1–3 ที่มีมูลค่าสูงสุด)</div>
+    <textarea class="q-textarea" name="mat_main" placeholder="ระบุวัตถุดิบหลัก เช่น:&#10;1. เหล็กกล้า (Steel) — 45% ของต้นทุนวัสดุ&#10;2. พลาสติกวิศวกรรม (Engineering Plastic) — 30%&#10;3. อลูมิเนียมหล่อ (Cast Aluminum) — 25%"></textarea>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q6.</span> ระดับการเปลี่ยนประเภทวัสดุในกระบวนการนวัตกรรม</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers">
+        <th style="text-align:left">ประเภทการเปลี่ยนวัสดุ</th>
+        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+      </tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การเปลี่ยนจากวัสดุดั้งเดิมสู่วัสดุใหม่<span class="sub-en">Conventional → New material transition</span></td>
+          <td class="radio-cell"><input type="radio" name="mch_new" value="1" id="mn1"><label for="mn1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mch_new" value="2" id="mn2"><label for="mn2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mch_new" value="3" id="mn3"><label for="mn3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mch_new" value="4" id="mn4"><label for="mn4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mch_new" value="5" id="mn5"><label for="mn5">5</label></td></tr>
+        <tr class="likert-row"><td>การใช้วัสดุพิเศษหรือวัสดุขั้นสูง<span class="sub-en">Special / advanced material usage</span></td>
+          <td class="radio-cell"><input type="radio" name="mch_spec" value="1" id="ms1"><label for="ms1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mch_spec" value="2" id="ms2"><label for="ms2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mch_spec" value="3" id="ms3"><label for="ms3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mch_spec" value="4" id="ms4"><label for="ms4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mch_spec" value="5" id="ms5"><label for="ms5">5</label></td></tr>
+        <tr class="likert-row"><td>การเปลี่ยนสู่วัสดุที่เป็นมิตรต่อสิ่งแวดล้อม<span class="sub-en">Eco-friendly / sustainable material adoption</span></td>
+          <td class="radio-cell"><input type="radio" name="mch_eco" value="1" id="me1"><label for="me1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="mch_eco" value="2" id="me2"><label for="me2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="mch_eco" value="3" id="me3"><label for="me3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="mch_eco" value="4" id="me4"><label for="me4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="mch_eco" value="5" id="me5"><label for="me5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SEC 5 · Material · 29 — ห่วงโซ่อุปทานวัสดุ
+═══════════════════════════════════════════ -->
+<div class="section-card" id="sec5">
+  <div class="section-header">
+    <div><div class="criterion-num">Mat · 29</div></div>
+    <div>
+      <div class="criterion-title">ห่วงโซ่อุปทานวัสดุ <em>(Material Supply Chain)</em></div>
+      <div class="criterion-desc">
+        เครือข่ายสิ่งอำนวยความสะดวกสำหรับการจัดการวัสดุ ตั้งแต่ต้นน้ำถึงปลายน้ำ ประกอบด้วย
+        <strong style="color:var(--accent)">Network of Facilities</strong> — เครือข่ายวัสดุ และ
+        <strong style="color:var(--teal)">IT Integration</strong> — การบูรณาการเทคโนโลยีสารสนเทศในห่วงโซ่
+      </div>
+      <div><span class="sub-label">Network of facilities</span><span class="sub-label">IT integration in supply chain</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q7.</span> ระดับการจัดการห่วงโซ่อุปทานวัสดุ</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers">
+        <th style="text-align:left">ด้านห่วงโซ่อุปทานวัสดุ</th>
+        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+      </tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การส่งต่อวัสดุจากซัพพลายเออร์ (ต้นน้ำ)<span class="sub-en">Material flow from supplier (upstream)</span></td>
+          <td class="radio-cell"><input type="radio" name="msc_up" value="1" id="mu1"><label for="mu1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="msc_up" value="2" id="mu2"><label for="mu2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="msc_up" value="3" id="mu3"><label for="mu3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="msc_up" value="4" id="mu4"><label for="mu4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="msc_up" value="5" id="mu5"><label for="mu5">5</label></td></tr>
+        <tr class="likert-row"><td>การแปรรูปวัสดุเป็นสินค้ากึ่งสำเร็จและสำเร็จรูป<span class="sub-en">Material → semi-finished → finished goods transformation</span></td>
+          <td class="radio-cell"><input type="radio" name="msc_mid" value="1" id="mm1"><label for="mm1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="msc_mid" value="2" id="mm2"><label for="mm2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="msc_mid" value="3" id="mm3"><label for="mm3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="msc_mid" value="4" id="mm4"><label for="mm4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="msc_mid" value="5" id="mm5"><label for="mm5">5</label></td></tr>
+        <tr class="likert-row"><td>การส่งมอบสินค้าแก่ลูกค้า (ปลายน้ำ)<span class="sub-en">Delivery of iGood to customer (downstream)</span></td>
+          <td class="radio-cell"><input type="radio" name="msc_down" value="1" id="md1"><label for="md1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="msc_down" value="2" id="md2"><label for="md2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="msc_down" value="3" id="md3"><label for="md3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="msc_down" value="4" id="md4"><label for="md4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="msc_down" value="5" id="md5"><label for="md5">5</label></td></tr>
+        <tr class="likert-row"><td>การนำระบบ IT เข้ามาบูรณาการในห่วงโซ่วัสดุ<span class="sub-en">IT integration in material supply chain</span></td>
+          <td class="radio-cell"><input type="radio" name="msc_it" value="1" id="mit1"><label for="mit1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="msc_it" value="2" id="mit2"><label for="mit2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="msc_it" value="3" id="mit3"><label for="mit3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="msc_it" value="4" id="mit4"><label for="mit4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="msc_it" value="5" id="mit5"><label for="mit5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SEC 6 · Material · 30 — การป้องกันของเสีย
+═══════════════════════════════════════════ -->
+<div class="section-card" id="sec6">
+  <div class="section-header">
+    <div><div class="criterion-num">Mat · 30</div></div>
+    <div>
+      <div class="criterion-title">การป้องกันและจัดการของเสีย <em>(Waste Prevention)</em></div>
+      <div class="criterion-desc">
+        การป้องกันของเสียในกระบวนการผลิตและห่วงโซ่คุณค่า ครอบคลุมตั้งแต่ต้นน้ำ กลางน้ำ ถึงปลายน้ำ
+        รวมถึงการดูแลสิ่งแวดล้อมและการอนุรักษ์ธรรมชาติ เป็นปัจจัยสำคัญของ
+        <strong style="color:var(--accent)">ความยั่งยืนด้านวัสดุ</strong> และ <strong style="color:var(--teal)">เศรษฐกิจหมุนเวียน (Circular Economy)</strong>
+      </div>
+      <div><span class="sub-label">Upstream waste</span><span class="sub-label">Midstream waste</span><span class="sub-label">Downstream waste</span><span class="sub-label">Environmental care</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q8.</span> ระดับการป้องกันและจัดการของเสียในกระบวนการ</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers">
+        <th style="text-align:left">ด้านการป้องกันของเสีย</th>
+        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+      </tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การจัดการของเสียต้นน้ำ — วัตถุดิบและการจัดซื้อ<span class="sub-en">Upstream waste management — raw material &amp; procurement</span></td>
+          <td class="radio-cell"><input type="radio" name="wp_up" value="1" id="wu1"><label for="wu1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="wp_up" value="2" id="wu2"><label for="wu2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="wp_up" value="3" id="wu3"><label for="wu3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="wp_up" value="4" id="wu4"><label for="wu4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="wp_up" value="5" id="wu5"><label for="wu5">5</label></td></tr>
+        <tr class="likert-row"><td>การจัดการของเสียกลางน้ำ — กระบวนการผลิต<span class="sub-en">Midstream waste management — production process</span></td>
+          <td class="radio-cell"><input type="radio" name="wp_mid" value="1" id="wm1"><label for="wm1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="wp_mid" value="2" id="wm2"><label for="wm2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="wp_mid" value="3" id="wm3"><label for="wm3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="wp_mid" value="4" id="wm4"><label for="wm4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="wp_mid" value="5" id="wm5"><label for="wm5">5</label></td></tr>
+        <tr class="likert-row"><td>การจัดการของเสียปลายน้ำ — หลังการขาย<span class="sub-en">Downstream waste management — post-sale &amp; end-of-life</span></td>
+          <td class="radio-cell"><input type="radio" name="wp_down" value="1" id="wd1"><label for="wd1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="wp_down" value="2" id="wd2"><label for="wd2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="wp_down" value="3" id="wd3"><label for="wd3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="wp_down" value="4" id="wd4"><label for="wd4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="wp_down" value="5" id="wd5"><label for="wd5">5</label></td></tr>
+        <tr class="likert-row"><td>การดูแลสิ่งแวดล้อมและอนุรักษ์ธรรมชาติ<span class="sub-en">Environmental care &amp; nature conservation</span></td>
+          <td class="radio-cell"><input type="radio" name="wp_env" value="1" id="we1"><label for="we1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="wp_env" value="2" id="we2"><label for="we2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="wp_env" value="3" id="we3"><label for="we3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="wp_env" value="4" id="we4"><label for="we4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="wp_env" value="5" id="we5"><label for="we5">5</label></td></tr>
+        <tr class="likert-row"><td>การนำของเสียกลับมาใช้ใหม่ (Circular Economy)<span class="sub-en">Waste recycling &amp; circular economy practices</span></td>
+          <td class="radio-cell"><input type="radio" name="wp_circ" value="1" id="wc1"><label for="wc1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="wp_circ" value="2" id="wc2"><label for="wc2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="wp_circ" value="3" id="wc3"><label for="wc3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="wp_circ" value="4" id="wc4"><label for="wc4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="wp_circ" value="5" id="wc5"><label for="wc5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RESULTS PANEL -->
+<div id="results-panel">
+  <div class="results-header">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.1em;margin-bottom:10px">MATERIAL DIMENSION ASSESSMENT COMPLETE</div>
+    <h2>ผลการประเมินมิติ Material</h2>
+    <p>Material Management Dimension · TIM5 Diamond-Ring Model</p>
+  </div>
+  <div class="overall-wrap">
+    <div class="overall-score" id="overallPct">—</div>
+    <div class="overall-label">คะแนนรวม Material Dimension (%)</div>
+    <div class="overall-level" id="overallLevel"></div>
+  </div>
+  <div class="score-grid" id="scoreGrid"></div>
+  <div class="radar-wrap">
+    <div class="radar-title">Material Dimension — Sub-Criteria Score Profile</div>
+    <canvas id="radarChart" width="480" height="320" style="max-width:100%"></canvas>
+  </div>
+  <div id="interpCards"></div>
+</div>
+
+<div class="nav-bar" id="navBar">
+  <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)" style="display:none">← ก่อนหน้า</button>
+  <div class="section-indicator" id="sectionHint"></div>
+  <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">ถัดไป →</button>
+</div>
+
+</div><!-- /content -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const SECTIONS = 6;
+const sectionNames = [
+  'การควบคุมวัสดุ (Material Control)',
+  'การเปลี่ยนองค์ประกอบ (Component Change)',
+  'การเปลี่ยนระบบ (System Change)',
+  'การเปลี่ยนวัสดุ (Material Change)',
+  'ห่วงโซ่อุปทานวัสดุ (Supply Chain)',
+  'การป้องกันของเสีย (Waste Prevention)'
+];
+let current = 1;
+
+const dotsWrap = document.getElementById('stepDots');
+for (let i = 1; i <= SECTIONS; i++) {
+  const d = document.createElement('div');
+  d.className = 'step-dot' + (i === 1 ? ' active' : '');
+  d.id = 'dot' + i;
+  dotsWrap.appendChild(d);
+}
+
+function updateUI() {
+  for (let i = 1; i <= SECTIONS; i++) {
+    document.getElementById('sec' + i).classList.toggle('visible', i === current);
+    const dot = document.getElementById('dot' + i);
+    dot.className = 'step-dot' + (i < current ? ' done' : i === current ? ' active' : '');
+  }
+  document.getElementById('stepLabel').textContent = current;
+  document.getElementById('sectionHint').textContent = sectionNames[current - 1];
+  document.getElementById('prevBtn').style.display = current > 1 ? 'inline-flex' : 'none';
+  const nb = document.getElementById('nextBtn');
+  if (current === SECTIONS) { nb.textContent = 'ดูผลการประเมิน ✓'; nb.className = 'btn btn-success'; }
+  else { nb.textContent = 'ถัดไป →'; nb.className = 'btn btn-primary'; }
+}
+
+function navigate(dir) {
+  if (current + dir > SECTIONS) { showResults(); return; }
+  current = Math.max(1, Math.min(SECTIONS, current + dir));
+  updateUI();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getAvg(names) {
+  let total = 0, count = 0;
+  names.forEach(n => {
+    const v = document.querySelector(`input[name="${n}"]:checked`);
+    if (v) { total += parseInt(v.value); count++; }
+  });
+  return count > 0 ? total / count : 0;
+}
+
+function showResults() {
+  for (let i = 1; i <= SECTIONS; i++) document.getElementById('sec' + i).classList.remove('visible');
+  document.getElementById('navBar').style.display = 'none';
+  document.getElementById('results-panel').classList.add('visible');
+
+  const scores = {
+    matctrl: getAvg(['mc_flow','mc_qual','mc_qty','mc_cost']),
+    compchg: getAvg(['cc_sub','cc_eco','cc_cost','cc_result']),
+    syschg:  getAvg(['sc_design','sc_tech','sc_auto','sc_result']),
+    matchg:  getAvg(['mch_new','mch_spec','mch_eco']),
+    supchain:getAvg(['msc_up','msc_mid','msc_down','msc_it']),
+    waste:   getAvg(['wp_up','wp_mid','wp_down','wp_env','wp_circ'])
+  };
+  const pcts = {};
+  Object.keys(scores).forEach(k => { pcts[k] = Math.round((scores[k] / 5) * 100); });
+  const overall = Math.round(Object.values(pcts).reduce((a, b) => a + b, 0) / 6);
+
+  document.getElementById('overallPct').textContent = overall + '%';
+  let level = '', lc = '';
+  if (overall >= 85) { level = '★ ความเป็นเลิศด้านการจัดการวัสดุ'; lc = 'background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3)'; }
+  else if (overall >= 70) { level = '✦ ขั้นสูง — วัสดุนวัตกรรมขับเคลื่อน'; lc = 'background:rgba(74,222,128,0.12);color:#4ade80;border:1px solid rgba(74,222,128,0.3)'; }
+  else if (overall >= 50) { level = '◈ กำลังพัฒนา'; lc = 'background:rgba(96,165,250,0.12);color:#60a5fa;border:1px solid rgba(96,165,250,0.3)'; }
+  else if (overall >= 30) { level = '◇ ระยะเริ่มต้น'; lc = 'background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)'; }
+  else { level = '○ ต้องพัฒนา'; lc = 'background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.3)'; }
+  const lvlEl = document.getElementById('overallLevel');
+  lvlEl.textContent = level; lvlEl.style.cssText = lc;
+
+  const cards = [
+    { key:'matctrl',  label:'ควบคุมวัสดุ',     en:'Material Control',  cls:'c1', color:'#4ade80' },
+    { key:'compchg',  label:'เปลี่ยนองค์ประกอบ',en:'Component Change', cls:'c2', color:'#60a5fa' },
+    { key:'syschg',   label:'เปลี่ยนระบบ',      en:'System Change',    cls:'c3', color:'#f59e0b' },
+    { key:'matchg',   label:'เปลี่ยนวัสดุ',     en:'Material Change',  cls:'c4', color:'#34d399' },
+    { key:'supchain', label:'ห่วงโซ่วัสดุ',     en:'Supply Chain',     cls:'c5', color:'#2dd4bf' },
+    { key:'waste',    label:'ป้องกันของเสีย',   en:'Waste Prevention', cls:'c6', color:'#f87171' }
+  ];
+
+  const grid = document.getElementById('scoreGrid');
+  grid.innerHTML = '';
+  cards.forEach(c => {
+    grid.innerHTML += `<div class="score-card ${c.cls}">
+      <div class="criterion-tag">${c.en}</div>
+      <div class="score-val">${pcts[c.key]}%</div>
+      <div class="score-label">${c.label}</div>
+    </div>`;
+  });
+
+  const ie = document.getElementById('interpCards');
+  ie.innerHTML = '<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#4ade80"></div><div class="interp-title">คะแนนย่อยแต่ละเกณฑ์ Material Dimension</div></div>' +
+    cards.map(c => `<div class="bar-row">
+      <div class="bar-label">${c.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pcts[c.key]}%;background:${c.color}"></div></div>
+      <div class="bar-score">${pcts[c.key]}%</div>
+    </div>`).join('') + '</div>';
+
+  if (pcts.matctrl < 50) ie.innerHTML += `<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#4ade80"></div><div class="interp-title">ปรับปรุงด่วน: การควบคุมวัสดุ</div></div><div class="interp-body">ควรสร้างระบบ Material Flow Planning และ Inventory Management ที่ครอบคลุมทั้งกระบวนการ ตั้งแต่การจัดซื้อ การรับของ การจัดเก็บ จนถึงการเบิกใช้ในสายการผลิต เพื่อลดต้นทุนและลดของเสีย</div></div>`;
+  if (pcts.waste < 50) ie.innerHTML += `<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#f87171"></div><div class="interp-title">เร่งพัฒนา: การป้องกันของเสีย</div></div><div class="interp-body">ควรนำหลักการ Zero Waste และ Circular Economy มาใช้ในกระบวนการผลิต พร้อมทั้งกำหนดเป้าหมายลดของเสียอย่างชัดเจน และติดตามตัวชี้วัดสิ่งแวดล้อมอย่างสม่ำเสมอ</div></div>`;
+  if (pcts.matchg < 50) ie.innerHTML += `<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#34d399"></div><div class="interp-title">พัฒนา: การเปลี่ยนวัสดุ</div></div><div class="interp-body">ควรจัดทำโรดแมปการเปลี่ยนวัสดุ โดยเริ่มจากการทดแทนวัสดุที่มีผลกระทบสิ่งแวดล้อมสูงสุด และพิจารณาวัสดุ Bio-based หรือ Recycled content เพื่อเพิ่มความยั่งยืน</div></div>`;
+  if (overall >= 70) ie.innerHTML += `<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#4ade80"></div><div class="interp-title">จุดแข็ง: Material Dimension แข็งแกร่ง</div></div><div class="interp-body">องค์กรมีการจัดการวัสดุในระดับดี ขั้นต่อไปคือการยกระดับสู่ iGood Innovation — การนำวัสดุนวัตกรรมมาสร้างผลิตภัณฑ์ กระบวนการ และบริการใหม่ที่มีมูลค่าเพิ่มและเป็นมิตรต่อสิ่งแวดล้อม</div></div>`;
+
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['Material Control','Component Change','System Change','Material Change','Supply Chain','Waste Prevention'],
+      datasets: [{
+        label: 'Material Score (%)',
+        data: cards.map(c => pcts[c.key]),
+        borderColor: '#4ade80',
+        backgroundColor: 'rgba(74,222,128,0.12)',
+        borderWidth: 2,
+        pointBackgroundColor: cards.map(c => c.color),
+        pointRadius: 5,
+        pointHoverRadius: 7,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          beginAtZero: true, max: 100,
+          ticks: { color:'#8890a8', font:{size:10}, stepSize:20, backdropColor:'transparent' },
+          grid: { color:'rgba(255,255,255,0.08)' },
+          angleLines: { color:'rgba(255,255,255,0.08)' },
+          pointLabels: { color:'#e8eaf2', font:{size:11, family:"'IBM Plex Mono',monospace"} }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => ` ${ctx.parsed.r}%` },
+          backgroundColor:'#1c2030', borderColor:'rgba(255,255,255,0.12)', borderWidth:1,
+          titleColor:'#e8eaf2', bodyColor:'#8890a8'
+        }
+      }
+    }
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+updateUI();
+</script>
+</body>
+</html>

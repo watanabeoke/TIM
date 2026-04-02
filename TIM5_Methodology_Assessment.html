@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIM5 — มิติที่ 3: Methodology</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0f14;--surface:#141720;--surface2:#1c2030;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#e8eaf2;--muted:#8890a8;--accent:#2dd4bf;--gold:#f5c842;--teal:#2dd4bf;--score1:#f87171;--score2:#fbbf24;--score3:#60a5fa;--score4:#34d399;--score5:#a78bfa;--font:'Sarabun',sans-serif;--mono:'IBM Plex Mono',monospace;--r:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.6;min-height:100vh}
+.header{background:linear-gradient(135deg,#0d0f14 0%,#0a1a18 50%,#0d0f14 100%);border-bottom:1px solid var(--border2);padding:28px 36px 24px;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(45,212,191,0.12) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(45,212,191,0.08) 0%,transparent 55%);pointer-events:none}
+.header-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(45,212,191,0.12);border:1px solid rgba(45,212,191,0.3);border-radius:20px;padding:4px 14px;font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.06em;margin-bottom:16px}
+.header-title{font-size:28px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:6px}
+.header-title span{color:var(--accent)}
+.header-sub{font-size:14px;color:var(--muted);font-family:var(--mono)}
+.header-meta{position:absolute;top:28px;right:36px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8}
+.header-meta strong{color:var(--accent)}
+.progress-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 36px;display:flex;align-items:center;gap:20px}
+.progress-steps{display:flex;gap:6px;flex:1}
+.step-dot{height:4px;flex:1;border-radius:2px;background:var(--border2);transition:background 0.4s}
+.step-dot.active{background:var(--accent)}.step-dot.done{background:#a78bfa}
+.progress-label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.progress-label strong{color:var(--text)}
+.content{max-width:860px;margin:0 auto;padding:32px 36px 80px}
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:24px;overflow:hidden;display:none;animation:fadeUp 0.35s ease}
+.section-card.visible{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.section-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:16px}
+.criterion-num{font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(45,212,191,0.1);border:1px solid rgba(45,212,191,0.25);border-radius:6px;padding:3px 8px;white-space:nowrap;margin-top:2px}
+.criterion-title{font-size:18px;font-weight:600;color:#fff;line-height:1.3}
+.criterion-title em{font-style:normal;color:var(--muted);font-size:14px;font-weight:400;margin-left:8px}
+.criterion-desc{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.7}
+.sub-label{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:4px;padding:2px 7px;margin-top:10px;margin-right:6px}
+.q-block{padding:20px 24px;border-bottom:1px solid var(--border)}.q-block:last-child{border-bottom:none}
+.q-label{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:4px}
+.q-label .q-num{font-family:var(--mono);font-size:11px;color:var(--accent);margin-right:8px}
+.q-sublabel{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.likert-table{width:100%;border-collapse:collapse}
+.likert-table th{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding:0 6px 8px;white-space:nowrap}
+.scale-headers th:nth-child(2){color:var(--score1)}.scale-headers th:nth-child(3){color:var(--score2)}.scale-headers th:nth-child(4){color:var(--score3)}.scale-headers th:nth-child(5){color:var(--score4)}.scale-headers th:nth-child(6){color:var(--score5)}
+.likert-row td{padding:7px 6px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.likert-row:last-child td{border-bottom:none}
+.likert-row td:first-child{color:var(--text);padding-right:14px;font-size:13px;line-height:1.5;min-width:200px}
+.likert-row td:not(:first-child){text-align:center;width:60px}
+.sub-en{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:1px}
+.radio-cell input[type="radio"]{display:none}
+.radio-cell label{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border2);cursor:pointer;transition:all 0.18s;background:transparent;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.radio-cell label:hover{border-color:var(--accent);color:var(--accent);background:rgba(45,212,191,0.08)}
+.radio-cell input:checked+label{background:var(--score1);border-color:var(--score1);color:#fff;font-weight:600;box-shadow:0 0 12px rgba(248,113,113,0.4)}
+.score-2 input:checked+label{background:var(--score2);border-color:var(--score2);box-shadow:0 0 12px rgba(251,191,36,0.4)}
+.score-3 input:checked+label{background:var(--score3);border-color:var(--score3);box-shadow:0 0 12px rgba(96,165,250,0.4)}
+.score-4 input:checked+label{background:var(--score4);border-color:var(--score4);box-shadow:0 0 12px rgba(52,211,153,0.4)}
+.score-5 input:checked+label{background:var(--score5);border-color:var(--score5);box-shadow:0 0 12px rgba(167,139,250,0.4)}
+.q-textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;padding:10px 14px;resize:vertical;min-height:80px;margin-top:8px;transition:border 0.2s;outline:none}
+.q-textarea:focus{border-color:var(--accent)}.q-textarea::placeholder{color:var(--muted)}
+.nav-bar{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:600;transition:all 0.2s}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--muted)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:#0d1a18;box-shadow:0 4px 14px rgba(45,212,191,0.3)}.btn-primary:hover{background:#14b8a6;transform:translateY(-1px)}
+.btn-success{background:#a78bfa;color:#0d0f14;box-shadow:0 4px 14px rgba(167,139,250,0.3)}
+.section-indicator{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
+#results-panel{display:none}#results-panel.visible{display:block;animation:fadeUp 0.4s ease}
+.results-header{text-align:center;padding:40px 24px 32px}
+.results-header h2{font-size:26px;font-weight:700;color:#fff;margin-bottom:8px}
+.results-header p{font-size:14px;color:var(--muted)}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 28px}
+.score-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;text-align:center;position:relative;overflow:hidden}
+.score-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.score-card.c1::before{background:#2dd4bf}.score-card.c2::before{background:#60a5fa}.score-card.c3::before{background:#a78bfa}.score-card.c4::before{background:#34d399}.score-card.c5::before{background:#f59e0b}.score-card.c6::before{background:#f87171}
+.score-card .criterion-tag{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.score-card .score-val{font-size:30px;font-weight:700;color:#fff;line-height:1;margin-bottom:4px}
+.score-card .score-label{font-size:12px;color:var(--muted);margin-top:8px}
+.radar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:24px;text-align:center}
+.radar-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;font-family:var(--mono);margin-bottom:18px}
+.interpretation-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;margin-bottom:14px}
+.interp-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.interp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.interp-title{font-size:14px;font-weight:600;color:#fff}
+.interp-body{font-size:13.5px;color:var(--muted);line-height:1.75}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bar-label{font-size:12px;color:var(--text);min-width:140px;font-family:var(--mono)}
+.bar-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.8s cubic-bezier(0.16,1,0.3,1)}
+.bar-score{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:36px;text-align:right}
+.overall-wrap{background:linear-gradient(135deg,rgba(45,212,191,0.08),rgba(45,212,191,0.04));border:1px solid rgba(45,212,191,0.2);border-radius:var(--r);padding:28px;text-align:center;margin-bottom:24px}
+.overall-score{font-size:72px;font-weight:700;color:var(--accent);line-height:1;font-family:var(--mono)}
+.overall-label{font-size:14px;color:var(--muted);margin-top:6px;font-family:var(--mono)}
+.overall-level{display:inline-block;margin-top:14px;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:600}
+@media(max-width:640px){.header{padding:20px}.content{padding:20px 16px 60px}.header-meta{display:none}.score-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-badge">NIA Thailand · TIM5 Framework · Diamond-Ring Model</div>
+  <h1 class="header-title">มิติที่ 3: <span>Methodology</span> — กระบวนการพัฒนานวัตกรรม</h1>
+  <p class="header-sub">Innovation Development Process Dimension · Non-Assisted Version</p>
+  <div class="header-meta">
+    <div>5 Dimensions · 30 Criteria · 68 Sub-criteria</div>
+    <div>Total Innovation Management <strong>TIM⁵</strong></div>
+    <div style="margin-top:4px">Pantapong Tangteerasunun · NIA Bangkok</div>
+  </div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-steps" id="stepDots"></div>
+  <div class="progress-label">ส่วนที่ <strong id="stepLabel">1</strong> จาก <strong>6</strong></div>
+</div>
+<div class="content">
+
+<!-- SEC 1: PRODUCT LIFE CYCLE -->
+<div class="section-card visible" id="sec1">
+  <div class="section-header">
+    <div><div class="criterion-num">Method · 13</div></div>
+    <div>
+      <div class="criterion-title">วงจรชีวิตผลิตภัณฑ์นวัตกรรม <em>(Innovation Product Life Cycle)</em></div>
+      <div class="criterion-desc">วงจรชีวิตผลิตภัณฑ์นวัตกรรมหมายถึงกระบวนการและกิจกรรมที่เกี่ยวเนื่องกับการพัฒนานวัตกรรม ตั้งแต่การค้นหาแนวคิด การกรอง การเลือก การพัฒนาต้นแบบ การทดสอบ การดำเนินการ การตลาด การนำเสนอสินค้า และการประเมินจุดสิ้นสุด (เพื่อระบุว่าเป็นผลิตภัณฑ์ที่ดีหรือไม่)</div>
+      <div><span class="sub-label">Innovation PLC</span><span class="sub-label">Result of operational PLC</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q1.</span> โปรดระบุระยะเวลา (เดือน) ที่สินค้า/ผลิตภัณฑ์หลักสามารถทำกำไรได้ตั้งแต่ขั้นแนวคิดจนถึงขั้นสุดท้าย</div>
+    <textarea class="q-textarea" name="plc_time" placeholder="ระบุชื่อสินค้าและระยะเวลา (เดือน) เช่น สินค้า A: 18 เดือน / สินค้า B: 24 เดือน..."></textarea>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q2.</span> ระดับการจัดการวงจรชีวิตผลิตภัณฑ์นวัตกรรม</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">กระบวนการวงจรชีวิต</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>กระบวนการค้นหาและกรองแนวคิด<span class="sub-en">Idea search &amp; screening process</span></td>
+          <td class="radio-cell"><input type="radio" name="plc_screen" value="1" id="ps1"><label for="ps1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="plc_screen" value="2" id="ps2"><label for="ps2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="plc_screen" value="3" id="ps3"><label for="ps3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="plc_screen" value="4" id="ps4"><label for="ps4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="plc_screen" value="5" id="ps5"><label for="ps5">5</label></td></tr>
+        <tr class="likert-row"><td>การพัฒนาต้นแบบและทดสอบ<span class="sub-en">Prototype development &amp; testing</span></td>
+          <td class="radio-cell"><input type="radio" name="plc_proto" value="1" id="pp1"><label for="pp1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="plc_proto" value="2" id="pp2"><label for="pp2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="plc_proto" value="3" id="pp3"><label for="pp3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="plc_proto" value="4" id="pp4"><label for="pp4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="plc_proto" value="5" id="pp5"><label for="pp5">5</label></td></tr>
+        <tr class="likert-row"><td>การนำผลิตภัณฑ์สู่ตลาดและเติบโต<span class="sub-en">Launch &amp; growth management</span></td>
+          <td class="radio-cell"><input type="radio" name="plc_launch" value="1" id="pl1"><label for="pl1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="plc_launch" value="2" id="pl2"><label for="pl2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="plc_launch" value="3" id="pl3"><label for="pl3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="plc_launch" value="4" id="pl4"><label for="pl4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="plc_launch" value="5" id="pl5"><label for="pl5">5</label></td></tr>
+        <tr class="likert-row"><td>การประเมินและยุติผลิตภัณฑ์เมื่อสิ้นสุดวงจร<span class="sub-en">End-of-life evaluation &amp; exit</span></td>
+          <td class="radio-cell"><input type="radio" name="plc_end" value="1" id="pe1"><label for="pe1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="plc_end" value="2" id="pe2"><label for="pe2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="plc_end" value="3" id="pe3"><label for="pe3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="plc_end" value="4" id="pe4"><label for="pe4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="plc_end" value="5" id="pe5"><label for="pe5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 2: IDEA GENERATION -->
+<div class="section-card" id="sec2">
+  <div class="section-header">
+    <div><div class="criterion-num">Method · 14</div></div>
+    <div>
+      <div class="criterion-title">การก่อเกิดแนวคิด <em>(Idea Generation)</em></div>
+      <div class="criterion-desc">กระบวนการสร้าง รวบรวม และคัดกรองแนวคิดใหม่ๆ ทั้งจากภายในและภายนอกองค์กร ประกอบด้วย <strong style="color:var(--accent)">Systematics IG</strong> — ระบบการสร้างแนวคิด และ <strong style="color:var(--gold)">Result of IG</strong> — ผลลัพธ์จากกระบวนการสร้างแนวคิด</div>
+      <div><span class="sub-label">Systematics idea generation</span><span class="sub-label">Result of implementation</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q3.</span> ระดับระบบการก่อเกิดแนวคิดขององค์กร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">กระบวนการก่อเกิดแนวคิด</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>ระบบการรวบรวมแนวคิดอย่างเป็นระบบ<span class="sub-en">Systematic idea collection system</span></td>
+          <td class="radio-cell"><input type="radio" name="ig_sys" value="1" id="is1"><label for="is1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="ig_sys" value="2" id="is2"><label for="is2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="ig_sys" value="3" id="is3"><label for="is3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="ig_sys" value="4" id="is4"><label for="is4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="ig_sys" value="5" id="is5"><label for="is5">5</label></td></tr>
+        <tr class="likert-row"><td>การมีส่วนร่วมของพนักงานในการสร้างแนวคิด<span class="sub-en">Employee participation in idea generation</span></td>
+          <td class="radio-cell"><input type="radio" name="ig_emp" value="1" id="ie1"><label for="ie1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="ig_emp" value="2" id="ie2"><label for="ie2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="ig_emp" value="3" id="ie3"><label for="ie3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="ig_emp" value="4" id="ie4"><label for="ie4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="ig_emp" value="5" id="ie5"><label for="ie5">5</label></td></tr>
+        <tr class="likert-row"><td>กระบวนการคัดกรองและประเมินแนวคิด<span class="sub-en">Idea screening &amp; evaluation process</span></td>
+          <td class="radio-cell"><input type="radio" name="ig_screen" value="1" id="igsc1"><label for="igsc1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="ig_screen" value="2" id="igsc2"><label for="igsc2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="ig_screen" value="3" id="igsc3"><label for="igsc3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="ig_screen" value="4" id="igsc4"><label for="igsc4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="ig_screen" value="5" id="igsc5"><label for="igsc5">5</label></td></tr>
+        <tr class="likert-row"><td>ผลลัพธ์จากระบบ Idea Generation<span class="sub-en">Result of IG implementation &amp; realization</span></td>
+          <td class="radio-cell"><input type="radio" name="ig_result" value="1" id="igr1"><label for="igr1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="ig_result" value="2" id="igr2"><label for="igr2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="ig_result" value="3" id="igr3"><label for="igr3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="ig_result" value="4" id="igr4"><label for="igr4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="ig_result" value="5" id="igr5"><label for="igr5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 3: CREATIVE PROBLEM SOLVING -->
+<div class="section-card" id="sec3">
+  <div class="section-header">
+    <div><div class="criterion-num">Method · 15</div></div>
+    <div>
+      <div class="criterion-title">การแก้ปัญหาเชิงสร้างสรรค์ <em>(Creative Problem Solving)</em></div>
+      <div class="criterion-desc">เป็นกระบวนการและวิสัยทัศน์สำหรับพัฒนานวัตกรรม มีเครื่องมือหลากหลายสำหรับช่วยและส่งเสริมการสร้างสรรค์ รวมทั้งการตั้งคำถามจากปัญหา เน้นที่ <strong style="color:var(--accent)">Tooling for CPS</strong> — การใช้เครื่องมือแก้ปัญหา และ <strong style="color:var(--teal)">Result of CPS</strong> — ผลลัพธ์</div>
+      <div><span class="sub-label">Tooling for CPS</span><span class="sub-label">Result of CPS</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q4.</span> ระดับการใช้กระบวนการแก้ปัญหาเชิงสร้างสรรค์ในองค์กร</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">เครื่องมือและกระบวนการ CPS</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>การใช้เครื่องมือ CPS เช่น Design Thinking, TRIZ, Brainstorming<span class="sub-en">Use of CPS tools (Design Thinking, TRIZ, etc.)</span></td>
+          <td class="radio-cell"><input type="radio" name="cps_tool" value="1" id="ct1"><label for="ct1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cps_tool" value="2" id="ct2"><label for="ct2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cps_tool" value="3" id="ct3"><label for="ct3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cps_tool" value="4" id="ct4"><label for="ct4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cps_tool" value="5" id="ct5"><label for="ct5">5</label></td></tr>
+        <tr class="likert-row"><td>การฝึกอบรมด้าน CPS ให้กับพนักงาน<span class="sub-en">CPS training for employees</span></td>
+          <td class="radio-cell"><input type="radio" name="cps_train" value="1" id="ctr1"><label for="ctr1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cps_train" value="2" id="ctr2"><label for="ctr2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cps_train" value="3" id="ctr3"><label for="ctr3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cps_train" value="4" id="ctr4"><label for="ctr4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cps_train" value="5" id="ctr5"><label for="ctr5">5</label></td></tr>
+        <tr class="likert-row"><td>ผลลัพธ์จาก CPS: ผลิตภัณฑ์/บริการนวัตกรรมใหม่<span class="sub-en">CPS result: new innovation products/services</span></td>
+          <td class="radio-cell"><input type="radio" name="cps_result" value="1" id="cr1"><label for="cr1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="cps_result" value="2" id="cr2"><label for="cr2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="cps_result" value="3" id="cr3"><label for="cr3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="cps_result" value="4" id="cr4"><label for="cr4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="cps_result" value="5" id="cr5"><label for="cr5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 4: PROCESS DEVELOPMENT & CI -->
+<div class="section-card" id="sec4">
+  <div class="section-header">
+    <div><div class="criterion-num">Method · 16</div></div>
+    <div>
+      <div class="criterion-title">การพัฒนากระบวนการและปรับปรุงอย่างต่อเนื่อง <em>(Process Development &amp; CI)</em></div>
+      <div class="criterion-desc">การปรับปรุงกระบวนการทางธุรกิจอย่างเป็นระบบและต่อเนื่อง รวมถึง Kaizen, Lean, TQM ประกอบด้วย <strong style="color:var(--accent)">Planning &amp; Activity</strong> การวางแผนและกิจกรรม PD&CI และ <strong style="color:var(--teal)">Result of PD&CI</strong> ผลลัพธ์</div>
+      <div><span class="sub-label">Planning &amp; activity of PD&CI</span><span class="sub-label">Result of PD&CI</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q5.</span> ระดับการพัฒนากระบวนการและการปรับปรุงอย่างต่อเนื่อง</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">กระบวนการ PD &amp; CI</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>แผนการพัฒนากระบวนการอย่างเป็นระบบ<span class="sub-en">Systematic process development planning</span></td>
+          <td class="radio-cell"><input type="radio" name="ci_plan" value="1" id="cp1"><label for="cp1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="ci_plan" value="2" id="cp2"><label for="cp2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="ci_plan" value="3" id="cp3"><label for="cp3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="ci_plan" value="4" id="cp4"><label for="cp4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="ci_plan" value="5" id="cp5"><label for="cp5">5</label></td></tr>
+        <tr class="likert-row"><td>การใช้ Kaizen/Lean/Six Sigma<span class="sub-en">Kaizen / Lean / Six Sigma implementation</span></td>
+          <td class="radio-cell"><input type="radio" name="ci_kaizen" value="1" id="ck1"><label for="ck1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="ci_kaizen" value="2" id="ck2"><label for="ck2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="ci_kaizen" value="3" id="ck3"><label for="ck3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="ci_kaizen" value="4" id="ck4"><label for="ck4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="ci_kaizen" value="5" id="ck5"><label for="ck5">5</label></td></tr>
+        <tr class="likert-row"><td>ผลลัพธ์: การลดเวลาและต้นทุนกระบวนการ<span class="sub-en">Result: time &amp; cost reduction in process</span></td>
+          <td class="radio-cell"><input type="radio" name="ci_result" value="1" id="cir1"><label for="cir1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="ci_result" value="2" id="cir2"><label for="cir2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="ci_result" value="3" id="cir3"><label for="cir3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="ci_result" value="4" id="cir4"><label for="cir4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="ci_result" value="5" id="cir5"><label for="cir5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 5: NPD -->
+<div class="section-card" id="sec5">
+  <div class="section-header">
+    <div><div class="criterion-num">Method · 17</div></div>
+    <div>
+      <div class="criterion-title">การพัฒนาผลิตภัณฑ์ใหม่ <em>(New Products Development — NPD)</em></div>
+      <div class="criterion-desc">NPD คือสิ่งสำคัญอย่างมากในองค์กรขนาดกลางถึงใหญ่ แม้จะมีความเสี่ยงและความไม่แน่นอนสูง แต่หากองค์กรสามารถควบคุมปัจจัยต่างๆ ได้ ก็จะประสบความสำเร็จในการพัฒนาผลิตภัณฑ์ใหม่ ประกอบด้วย <strong style="color:var(--accent)">Relevance of NPD Process</strong>, <strong style="color:var(--teal)">KM &amp; Technology</strong>, <strong style="color:var(--gold)">Result of NPD</strong></div>
+      <div><span class="sub-label">Relevance of NPD process</span><span class="sub-label">KM &amp; technology</span><span class="sub-label">Result of NPD</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q6.</span> ระดับความสามารถด้าน New Product Development</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้าน NPD</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>กระบวนการ NPD ที่ชัดเจนและเป็นระบบ<span class="sub-en">Clear &amp; systematic NPD process</span></td>
+          <td class="radio-cell"><input type="radio" name="npd_proc" value="1" id="np1"><label for="np1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="npd_proc" value="2" id="np2"><label for="np2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="npd_proc" value="3" id="np3"><label for="np3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="npd_proc" value="4" id="np4"><label for="np4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="npd_proc" value="5" id="np5"><label for="np5">5</label></td></tr>
+        <tr class="likert-row"><td>การใช้ KM และเทคโนโลยีในกระบวนการ NPD<span class="sub-en">KM &amp; technology relevance in NPD</span></td>
+          <td class="radio-cell"><input type="radio" name="npd_km" value="1" id="nk1"><label for="nk1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="npd_km" value="2" id="nk2"><label for="nk2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="npd_km" value="3" id="nk3"><label for="nk3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="npd_km" value="4" id="nk4"><label for="nk4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="npd_km" value="5" id="nk5"><label for="nk5">5</label></td></tr>
+        <tr class="likert-row"><td>อัตราความสำเร็จของ NPD ในช่วง 3 ปีที่ผ่านมา<span class="sub-en">NPD success rate in last 3 years</span></td>
+          <td class="radio-cell"><input type="radio" name="npd_rate" value="1" id="nr1"><label for="nr1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="npd_rate" value="2" id="nr2"><label for="nr2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="npd_rate" value="3" id="nr3"><label for="nr3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="npd_rate" value="4" id="nr4"><label for="nr4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="npd_rate" value="5" id="nr5"><label for="nr5">5</label></td></tr>
+        <tr class="likert-row"><td>รายได้จาก NPD ต่อยอดขายรวม<span class="sub-en">NPD revenue as % of total sales</span></td>
+          <td class="radio-cell"><input type="radio" name="npd_rev" value="1" id="nrev1"><label for="nrev1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="npd_rev" value="2" id="nrev2"><label for="nrev2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="npd_rev" value="3" id="nrev3"><label for="nrev3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="npd_rev" value="4" id="nrev4"><label for="nrev4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="npd_rev" value="5" id="nrev5"><label for="nrev5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SEC 6: PRODUCTIVITY -->
+<div class="section-card" id="sec6">
+  <div class="section-header">
+    <div><div class="criterion-num">Method · 18</div></div>
+    <div>
+      <div class="criterion-title">การเพิ่มผลผลิต <em>(Productivity)</em></div>
+      <div class="criterion-desc">ประสิทธิภาพของกระบวนการนวัตกรรม — ผลผลิตต่อหน่วยปัจจัยการผลิต ประกอบด้วย <strong style="color:var(--accent)">Single Factor Productivity (SFP)</strong> ผลผลิตปัจจัยเดี่ยว และ <strong style="color:var(--teal)">Multi-Factor Productivity (MFP)</strong> ผลผลิตหลายปัจจัย</div>
+      <div><span class="sub-label">Single factor productivity (SFP)</span><span class="sub-label">Multi-factor productivity (MFP)</span></div>
+    </div>
+  </div>
+  <div class="q-block">
+    <div class="q-label"><span class="q-num">Q7.</span> ระดับการเพิ่มผลผลิตในกระบวนการนวัตกรรม</div>
+    <div class="q-sublabel">ระดับ 1 = ต่ำมาก | 2 = ต่ำ-กลาง | 3 = กลาง | 4 = กลาง-สูง | 5 = สูง</div>
+    <table class="likert-table">
+      <thead><tr class="scale-headers"><th style="text-align:left">ด้านผลผลิต</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+      <tbody>
+        <tr class="likert-row"><td>ผลผลิตแรงงาน (Labor productivity)<span class="sub-en">Output per labor unit — Single Factor Productivity</span></td>
+          <td class="radio-cell"><input type="radio" name="prod_sfp" value="1" id="pf1"><label for="pf1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="prod_sfp" value="2" id="pf2"><label for="pf2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="prod_sfp" value="3" id="pf3"><label for="pf3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="prod_sfp" value="4" id="pf4"><label for="pf4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="prod_sfp" value="5" id="pf5"><label for="pf5">5</label></td></tr>
+        <tr class="likert-row"><td>ผลผลิตรวมปัจจัย (TFP) — ประสิทธิภาพรวม<span class="sub-en">Total Factor Productivity — overall efficiency</span></td>
+          <td class="radio-cell"><input type="radio" name="prod_mfp" value="1" id="pm1"><label for="pm1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="prod_mfp" value="2" id="pm2"><label for="pm2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="prod_mfp" value="3" id="pm3"><label for="pm3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="prod_mfp" value="4" id="pm4"><label for="pm4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="prod_mfp" value="5" id="pm5"><label for="pm5">5</label></td></tr>
+        <tr class="likert-row"><td>การวัดและติดตามผลผลิตนวัตกรรมอย่างสม่ำเสมอ<span class="sub-en">Regular measurement of innovation productivity</span></td>
+          <td class="radio-cell"><input type="radio" name="prod_measure" value="1" id="pme1"><label for="pme1">1</label></td>
+          <td class="radio-cell score-2"><input type="radio" name="prod_measure" value="2" id="pme2"><label for="pme2">2</label></td>
+          <td class="radio-cell score-3"><input type="radio" name="prod_measure" value="3" id="pme3"><label for="pme3">3</label></td>
+          <td class="radio-cell score-4"><input type="radio" name="prod_measure" value="4" id="pme4"><label for="pme4">4</label></td>
+          <td class="radio-cell score-5"><input type="radio" name="prod_measure" value="5" id="pme5"><label for="pme5">5</label></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results-panel">
+  <div class="results-header">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.1em;margin-bottom:10px">METHODOLOGY DIMENSION ASSESSMENT COMPLETE</div>
+    <h2>ผลการประเมินมิติ Methodology</h2>
+    <p>Innovation Development Process Dimension · TIM5 Diamond-Ring Model</p>
+  </div>
+  <div class="overall-wrap">
+    <div class="overall-score" id="overallPct">—</div>
+    <div class="overall-label">คะแนนรวม Methodology Dimension (%)</div>
+    <div class="overall-level" id="overallLevel"></div>
+  </div>
+  <div class="score-grid" id="scoreGrid"></div>
+  <div class="radar-wrap">
+    <div class="radar-title">Methodology Dimension — Sub-Criteria Score Profile</div>
+    <canvas id="radarChart" width="480" height="320" style="max-width:100%"></canvas>
+  </div>
+  <div id="interpCards"></div>
+</div>
+
+<div class="nav-bar" id="navBar">
+  <button class="btn btn-outline" id="prevBtn" onclick="navigate(-1)" style="display:none">← ก่อนหน้า</button>
+  <div class="section-indicator" id="sectionHint"></div>
+  <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">ถัดไป →</button>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const SECTIONS=6,sectionNames=['วงจรชีวิตผลิตภัณฑ์ (PLC)','การก่อเกิดแนวคิด (Idea Gen)','การแก้ปัญหาเชิงสร้างสรรค์ (CPS)','การปรับปรุงอย่างต่อเนื่อง (CI)','การพัฒนาผลิตภัณฑ์ใหม่ (NPD)','การเพิ่มผลผลิต (Productivity)'];
+let current=1;
+const dotsWrap=document.getElementById('stepDots');
+for(let i=1;i<=SECTIONS;i++){const d=document.createElement('div');d.className='step-dot'+(i===1?' active':'');d.id='dot'+i;dotsWrap.appendChild(d)}
+function updateUI(){for(let i=1;i<=SECTIONS;i++){document.getElementById('sec'+i).classList.toggle('visible',i===current);const d=document.getElementById('dot'+i);d.className='step-dot'+(i<current?' done':i===current?' active':'')}document.getElementById('stepLabel').textContent=current;document.getElementById('sectionHint').textContent=sectionNames[current-1];document.getElementById('prevBtn').style.display=current>1?'inline-flex':'none';const nb=document.getElementById('nextBtn');if(current===SECTIONS){nb.textContent='ดูผลการประเมิน ✓';nb.className='btn btn-success'}else{nb.textContent='ถัดไป →';nb.className='btn btn-primary'}}
+function navigate(dir){if(current+dir>SECTIONS){showResults();return}current=Math.max(1,Math.min(SECTIONS,current+dir));updateUI();window.scrollTo({top:0,behavior:'smooth'})}
+function getAvg(names){let t=0,c=0;names.forEach(n=>{const v=document.querySelector(`input[name="${n}"]:checked`);if(v){t+=parseInt(v.value);c++}});return c>0?t/c:0}
+function showResults(){
+  for(let i=1;i<=SECTIONS;i++)document.getElementById('sec'+i).classList.remove('visible');
+  document.getElementById('navBar').style.display='none';
+  document.getElementById('results-panel').classList.add('visible');
+  const scores={plc:getAvg(['plc_screen','plc_proto','plc_launch','plc_end']),idegen:getAvg(['ig_sys','ig_emp','ig_screen','ig_result']),cps:getAvg(['cps_tool','cps_train','cps_result']),ci:getAvg(['ci_plan','ci_kaizen','ci_result']),npd:getAvg(['npd_proc','npd_km','npd_rate','npd_rev']),productivity:getAvg(['prod_sfp','prod_mfp','prod_measure'])};
+  const pcts={};Object.keys(scores).forEach(k=>{pcts[k]=Math.round((scores[k]/5)*100)});
+  const overall=Math.round(Object.values(pcts).reduce((a,b)=>a+b,0)/6);
+  document.getElementById('overallPct').textContent=overall+'%';
+  let level='',lc='';
+  if(overall>=85){level='★ กระบวนการนวัตกรรมระดับเลิศ';lc='background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3)'}
+  else if(overall>=70){level='✦ ขั้นสูง — นวัตกรรมขับเคลื่อน';lc='background:rgba(45,212,191,0.12);color:#2dd4bf;border:1px solid rgba(45,212,191,0.3)'}
+  else if(overall>=50){level='◈ กำลังพัฒนา';lc='background:rgba(96,165,250,0.12);color:#60a5fa;border:1px solid rgba(96,165,250,0.3)'}
+  else if(overall>=30){level='◇ ระยะเริ่มต้น';lc='background:rgba(251,191,36,0.12);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)'}
+  else{level='○ ต้องพัฒนา';lc='background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.3)'}
+  const lvlEl=document.getElementById('overallLevel');lvlEl.textContent=level;lvlEl.style.cssText=lc;
+  const cards=[
+    {key:'plc',label:'วงจรผลิตภัณฑ์',en:'Product Life Cycle',cls:'c1',color:'#2dd4bf'},
+    {key:'idegen',label:'การก่อเกิดแนวคิด',en:'Idea Generation',cls:'c2',color:'#60a5fa'},
+    {key:'cps',label:'การแก้ปัญหาสร้างสรรค์',en:'Creative Problem Solving',cls:'c3',color:'#a78bfa'},
+    {key:'ci',label:'การปรับปรุงต่อเนื่อง',en:'Process Dev &amp; CI',cls:'c4',color:'#34d399'},
+    {key:'npd',label:'การพัฒนาผลิตภัณฑ์ใหม่',en:'New Product Dev',cls:'c5',color:'#f59e0b'},
+    {key:'productivity',label:'การเพิ่มผลผลิต',en:'Productivity',cls:'c6',color:'#f87171'}
+  ];
+  const grid=document.getElementById('scoreGrid');grid.innerHTML='';
+  cards.forEach(c=>{grid.innerHTML+=`<div class="score-card ${c.cls}"><div class="criterion-tag">${c.en}</div><div class="score-val">${pcts[c.key]}%</div><div class="score-label">${c.label}</div></div>`});
+  const ie=document.getElementById('interpCards');
+  ie.innerHTML='<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#2dd4bf"></div><div class="interp-title">คะแนนย่อยแต่ละเกณฑ์ Methodology Dimension</div></div>'+cards.map(c=>`<div class="bar-row"><div class="bar-label">${c.label}</div><div class="bar-track"><div class="bar-fill" style="width:${pcts[c.key]}%;background:${c.color}"></div></div><div class="bar-score">${pcts[c.key]}%</div></div>`).join('')+'</div>';
+  if(pcts.npd<50)ie.innerHTML+=`<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#f59e0b"></div><div class="interp-title">ปรับปรุงด่วน: NPD</div></div><div class="interp-body">การพัฒนาผลิตภัณฑ์ใหม่เป็นหัวใจของ Methodology ควรสร้างกระบวนการ Stage-Gate อย่างเป็นระบบ พร้อมทั้งบูรณาการ KM และเทคโนโลยีเพื่อลดความเสี่ยงในการพัฒนา</div></div>`;
+  if(pcts.idegen<50)ie.innerHTML+=`<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#60a5fa"></div><div class="interp-title">พัฒนา: Idea Generation</div></div><div class="interp-body">ควรสร้างช่องทางการรวบรวมแนวคิดจากพนักงานทุกระดับ เช่น Innovation Box, Hackathon, Open Innovation Platform เพื่อเพิ่มอัตราการเกิดแนวคิดใหม่</div></div>`;
+  if(pcts.productivity<50)ie.innerHTML+=`<div class="interpretation-card"><div class="interp-header"><div class="interp-dot" style="background:#f87171"></div><div class="interp-title">เร่งพัฒนา: Productivity</div></div><div class="interp-body">ควรวัดและติดตามผลผลิตนวัตกรรมอย่างสม่ำเสมอ และใช้ Lean/Kaizen เพื่อปรับปรุงประสิทธิภาพกระบวนการ</div></div>`;
+  const ctx=document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx,{type:'radar',data:{labels:['PLC','Idea Gen','CPS','CI','NPD','Productivity'],datasets:[{label:'Methodology Score (%)',data:cards.map(c=>pcts[c.key]),borderColor:'#2dd4bf',backgroundColor:'rgba(45,212,191,0.12)',borderWidth:2,pointBackgroundColor:cards.map(c=>c.color),pointRadius:5,pointHoverRadius:7}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:100,ticks:{color:'#8890a8',font:{size:10},stepSize:20,backdropColor:'transparent'},grid:{color:'rgba(255,255,255,0.08)'},angleLines:{color:'rgba(255,255,255,0.08)'},pointLabels:{color:'#e8eaf2',font:{size:12,family:"'IBM Plex Mono',monospace"}}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.r}%`},backgroundColor:'#1c2030',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,titleColor:'#e8eaf2',bodyColor:'#8890a8'}}}});
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+updateUI();
+</script>
+</body>
+</html>
